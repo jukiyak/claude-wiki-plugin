@@ -89,18 +89,18 @@ Send a short message in the chosen locale. The orientation has three parts: divi
 
 各ドメインに「索引 (`{ドメイン}.md`)」と「ログ (`{ドメイン}-log.md`)」の 2 ファイルだけ。中身は空。
 
-## これから wiki が育っていく流れ (「健康」ドメインを例に)
+## これから wiki が育っていく流れ (「プロジェクト」ドメインを例に)
 
 ```
-セットアップ直後 (今):           最初のソースを置いた後:        wiki ページ生成後:
+セットアップ直後 (今):              最初のソースを置いた後:        wiki ページ生成後:
 
-健康/                            健康/                          健康/
-├── 健康.md (空の索引)           ├── 健康.md                   ├── 健康.md ← 索引が成長
-└── 健康-log.md (init のみ)      ├── 健康-log.md               ├── 健康-log.md ← ingest event
-                                 └── raw/                       ├── 睡眠の科学.md ← Claude 生成
-                                     └── 睡眠論文.pdf            └── raw/
-                                          ↑                          └── 睡眠論文.pdf
-                                          あなたが置く
+プロジェクト/                       プロジェクト/                  プロジェクト/
+├── プロジェクト.md (空索引)        ├── プロジェクト.md           ├── プロジェクト.md ← 索引が成長
+└── プロジェクト-log.md (init)      ├── プロジェクト-log.md       ├── プロジェクト-log.md ← ingest
+                                    └── raw/                       ├── 要件サマリ.md ← Claude 生成
+                                        └── キックオフ議事録.md      └── raw/
+                                             ↑                            └── キックオフ議事録.md
+                                             あなたが置く
 ```
 
 ソースが累積するほど Claude が cross-reference を維持し、wiki が compounding していきます。**あなたは sourcing と direction、Claude が bookkeeping** の分担です。
@@ -119,18 +119,18 @@ I'll walk you through a short interview to set up your knowledge base.
 
 Each domain gets only an index (`{domain}.md`) and a log (`{domain}-log.md`). Empty bodies.
 
-## How the wiki grows over time (using a "health" domain as an example)
+## How the wiki grows over time (using a "project" domain as an example)
 
 ```
-Right after setup:               After you drop a source:        After Claude generates a page:
+Right after setup:                  After you drop a source:        After Claude generates a page:
 
-health/                          health/                         health/
-├── health.md (empty index)      ├── health.md                  ├── health.md ← index grows
-└── health-log.md (init only)    ├── health-log.md              ├── health-log.md ← ingest event
-                                 └── raw/                        ├── sleep-science.md ← Claude
-                                     └── sleep-paper.pdf         └── raw/
-                                          ↑                          └── sleep-paper.pdf
-                                          you drop it
+project/                            project/                        project/
+├── project.md (empty index)        ├── project.md                 ├── project.md ← index grows
+└── project-log.md (init only)      ├── project-log.md             ├── project-log.md ← ingest event
+                                    └── raw/                        ├── requirements-summary.md ← Claude
+                                        └── kickoff-notes.md        └── raw/
+                                             ↑                            └── kickoff-notes.md
+                                             you drop it
 ```
 
 As sources accumulate, Claude maintains cross-references and the wiki compounds. **You source and direct; Claude does the bookkeeping.**
