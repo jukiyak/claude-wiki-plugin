@@ -78,7 +78,7 @@ Send a short message in the chosen locale. The orientation has three parts: divi
 
 **LOCALE = ja:**
 ````
-これから、あなたの knowledge base を作るための簡単なインタビューを行います。
+これから、あなたのセカンドブレイン（第2の脳）を作るための簡単なインタビューを行います。
 
 ## 役割分担 (3 階層モデル)
 - **あなた** — 何を記録する価値があるかを決める、ソースを集める
@@ -89,21 +89,21 @@ Send a short message in the chosen locale. The orientation has three parts: divi
 
 各ドメインに「索引 (`{ドメイン}.md`)」と「ログ (`{ドメイン}-log.md`)」の 2 ファイルだけ。中身は空。
 
-## これから wiki が育っていく流れ (「プロジェクト」ドメインを例に)
+## これから wiki が育っていく流れ (「健康」ドメインを例に)
 
 ```
-セットアップ直後 (今):              最初のソースを置いた後:        wiki ページ生成後:
+セットアップ直後 (今):           最初のソースを置いた後:        wiki ページ生成後:
 
-プロジェクト/                       プロジェクト/                  プロジェクト/
-├── プロジェクト.md (空索引)        ├── プロジェクト.md           ├── プロジェクト.md ← 索引が成長
-└── プロジェクト-log.md (init)      ├── プロジェクト-log.md       ├── プロジェクト-log.md ← ingest
-                                    └── raw/                       ├── 要件サマリ.md ← Claude 生成
-                                        └── キックオフ議事録.md      └── raw/
-                                             ↑                            └── キックオフ議事録.md
-                                             あなたが置く
+健康/                            健康/                          健康/
+├── 健康.md (空の索引)           ├── 健康.md                   ├── 健康.md ← 索引が成長
+└── 健康-log.md (init のみ)      ├── 健康-log.md               ├── 健康-log.md ← ingest 記録
+                                 └── raw/                       ├── 睡眠の科学.md ← Claude 生成
+                                     └── 睡眠論文.pdf            └── raw/
+                                          ↑                          └── 睡眠論文.pdf
+                                          あなたが置く
 ```
 
-ソースが累積するほど Claude が cross-reference を維持し、wiki が compounding していきます。**あなたは sourcing と direction、Claude が bookkeeping** の分担です。
+ソースが累積するほど Claude が相互参照を維持し、wiki が蓄積されて深まっていきます。**あなたは情報収集と方向づけ、Claude は記録と整理** の分担です。
 ````
 
 **LOCALE = en:**
@@ -144,7 +144,7 @@ Ask in plain text (not AskUserQuestion — this is a free-form list).
 
 **LOCALE = ja:**
 ```
-この knowledge base で追跡したい領域を 2-8 個、自分の言葉で挙げてください。
+このセカンドブレインで追跡したい領域を 2-8 個、自分の言葉で挙げてください。
 例: 仕事、個人、健康、読書、家族
 ```
 
@@ -179,7 +179,7 @@ your-vault/
 ├── パーソナル/             ← 個人・プライベート関連 (Step 5 の私的ドメインをここに)
 │   ├── パーソナル.md
 │   └── (Step 5 で挙げた個人関連のドメイン)
-└── システム/               ← 領域横断ノート (用語集、メタ docs など)
+└── システム/               ← 領域横断ノート (用語集、メタ文書 など)
     └── システム.md
 ```
 
@@ -367,14 +367,14 @@ The Inbox and System folders are created with only their own root-index file. Th
 "カテゴリ": []
 "ステータス": 下書き
 "更新日": 'YYYY-MM-DD'
-"まとめ": "claude-wiki でセットアップした knowledge base のオリエンテーションページ"
+"まとめ": "claude-wiki でセットアップしたセカンドブレインのオリエンテーションページ"
 "出典": []
 "エイリアス": []
 ---
 
 # YOUR-VAULT-NAME
 
-claude-wiki プラグインがセットアップしたあなたの knowledge base です。
+claude-wiki プラグインがセットアップしたあなたのセカンドブレイン（第2の脳）です。
 
 ## 役割分担 (3 階層モデル)
 
@@ -392,13 +392,13 @@ claude-wiki プラグインがセットアップしたあなたの knowledge bas
 
 ## 育て方
 
-- 各ドメインフォルダに普通に Markdown を書いていけば OK。Claude が読んで filing を手伝います
-- 関連スキル (`/daily-log`, `/add-page`, `/query-wiki`, `/lint-vault`) は今後の plugin 更新で届きます
+- 各ドメインフォルダに普通に Markdown を書いていけば OK。Claude が読んでファイリングを手伝います
+- 関連スキル (`/daily-log`, `/add-page`, `/query-wiki`, `/lint-vault`) は今後のプラグイン更新で届きます
 - 詳しい canonical な原則・ルールは https://github.com/jukiyak/claude-wiki-plugin
 
 ## 言語ロック
 
-このセットアップでは「日本語」を選びました。frontmatter キー (`タイプ`, `タグ`, etc.) も日本語です。後から英語に切り替えるには、v0.2.0+ で予定されている migration skill を待ってください。
+このセットアップでは「日本語」を選びました。frontmatter キー (`タイプ`, `タグ` 等) も日本語です。後から英語に切り替えるには、v0.2.0+ で予定されている移行スキルを待ってください。
 ```
 
 **LOCALE = en:**
@@ -509,7 +509,7 @@ The cross-domain folder is mandatory. Default name `システム` (JP) / `System
 "カテゴリ": []
 "ステータス": 下書き
 "更新日": 'YYYY-MM-DD'
-"まとめ": "領域横断ノートの置き場 — 複数ドメインに関わる用語集、振り返り、メタ docs など"
+"まとめ": "領域横断ノートの置き場 — 複数ドメインに関わる用語集、振り返り、メタ文書 など"
 "出典": []
 "エイリアス": []
 ---
@@ -521,7 +521,7 @@ The cross-domain folder is mandatory. Default name `システム` (JP) / `System
 ## 使い方
 
 - 用語集、ガイド、振り返りなど、特定ドメインに収まらないもの
-- このフォルダ自体のメタ docs (vault の運用ルール、Claude との約束ごと) もここに
+- このフォルダ自体のメタ文書 (vault の運用ルール、Claude との約束ごと) もここに
 ```
 
 **LOCALE = en:**
@@ -677,7 +677,7 @@ For flat-mode setups, replace `categories: ["[[<top-folder-name>]]"]` with `cate
 "カテゴリ": ["[[<ドメイン名>]]"]
 "ステータス": 下書き
 "更新日": 'YYYY-MM-DD'
-"まとめ": "<ドメイン名> ドメインの append-only な活動ログ"
+"まとめ": "<ドメイン名> ドメインの追記専用ログ"
 "出典": []
 "エイリアス": []
 ---
@@ -685,8 +685,8 @@ For flat-mode setups, replace `categories: ["[[<top-folder-name>]]"]` with `cate
 # <ドメイン名> ログ
 
 ## [YYYY-MM-DD] init | <ドメイン名> セットアップ
-- claude-wiki plugin v0.0.1 のセットアップ interview で作成
-- ユーザーの意図: <Step 5 でユーザーが表現した目的の 1 行 paraphrase>
+- claude-wiki プラグインのセットアップインタビューで作成
+- ユーザーの意図: <Step 5 でユーザーが表現した目的の 1 行要約>
 ```
 
 **LOCALE = en:**
@@ -706,7 +706,7 @@ aliases: []
 # <domain-name> log
 
 ## [YYYY-MM-DD] init | <domain-name> setup
-- Created via claude-wiki plugin v0.0.1 setup interview
+- Created via claude-wiki plugin setup interview
 - User-stated intent: <one-line paraphrase of the user's Step 5 description>
 ```
 
@@ -724,9 +724,9 @@ Print a confirmation. Show the created file tree as a tree-list with `computer:/
 
 各ドメインには「索引」と「ログ」しかまだありません — 中身は空です。ここから:
 
-- README を開いて 3-layer モデルを確認
-- 任意のドメインフォルダ配下で書き始める。Claude が読んで filing を手伝います
-- `/daily-log`, `/add-page`, `/query-wiki`, `/lint-vault` は次の plugin 更新で届きます
+- README を開いて 3 階層モデルを確認
+- 任意のドメインフォルダ配下で書き始める。Claude が読んでファイリングを手伝います
+- `/daily-log`, `/add-page`, `/query-wiki`, `/lint-vault` は次のプラグイン更新で届きます
 ```
 
 **LOCALE = en:**
