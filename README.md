@@ -10,7 +10,7 @@ The current released version is **v0.0.1**, a **distribution-pipeline validation
 - Cowork on macOS (and later Windows) accepts the plugin
 - Auto-update via the GitHub marketplace is reliable
 
-**v0.1.0 is in development** on the `v0.1.0-dev` branch. The first piece — an interview-driven `setup-claude-wiki` that asks the user which domains they want to track, helps them name top-level folders in their own vocabulary, and writes only the minimum scaffold (one root index per top folder + one wiki-index and wiki-log per domain) — is landing now. The remaining pieces (`daily-log`, `add-page`, `query-wiki`, `lint-vault`, plus two hooks) follow over the next few days. v0.1.0 will be released once all five skills and both hooks are ready.
+**v0.1.0 is in development** on `main` (no separate dev branch). The first piece — an interview-driven `setup-claude-wiki` that asks the user which domains they want to track, helps them name top-level folders in their own vocabulary, and writes only the minimum scaffold (one root index per top folder + one wiki-index and wiki-log per domain) — has landed (currently `0.1.0-dev.N` pre-release tags). The remaining pieces (`add-page`, `query-wiki`, `lint-vault`, plus the `.obsidian/` write-guard hook) follow over the next few sessions. v0.1.0 will be released once those four skills and the hook are ready. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
 
 Real features (wiki page management, query-with-citations, automated lint, Capture/Compile/Deep ingest tiers, verified-page gates) ship at **v0.1.0** and beyond.
 
@@ -65,7 +65,8 @@ After install:
 | Version | Scope |
 |:---|:---|
 | **v0.0.1** (current release) | Distribution-pipeline stub |
-| v0.1.0 (in development) | Basic profile MVP — interview-driven `setup-claude-wiki` (no bundled templates or domain presets — the user's domains and vocabulary drive the scaffold), `daily-log`, `add-page`, `query-wiki`, `lint-vault`, plus the Stop reminder + `.obsidian/` write-guard hooks. Per-skill templates emerge through first-use interviews. |
+| v0.1.0 (in development on `main`) | Basic profile MVP — interview-driven `setup-claude-wiki` (no bundled templates or domain presets — the user's domains and vocabulary drive the scaffold), `add-page`, `query-wiki`, `lint-vault`, plus the `.obsidian/` write-guard hook. Per-skill templates emerge through first-use interviews. |
+| v0.1.1+ (optional add-ons) | `daily-log` skill + Stop reminder hook for users who want a daily-journal workflow. Made optional because journaling is opinionated; not all PKM users do it. |
 | v0.2.0 | Pro profile — Capture / Compile / Deep ingest tiers, verified-page gate, sub-wiki scaffolding, `update-claude-wiki` schema migration, JP↔EN frontmatter migration |
 | v1.0.0 | Stability target — candidate for the Anthropic official marketplace |
 
@@ -73,7 +74,7 @@ The **basic** profile aims at general PKM users (journals, reading notes, study)
 
 ## Profiles
 
-- **basic** (v0.1.0) — interview-driven setup. The plugin asks which domains you want to track, helps you name top-level folders in your own vocabulary (e.g. `パーソナル / 仕事 / システム` or `personal / work / system`), and writes only the minimum scaffold: one root index per top folder + one wiki-index and wiki-log per domain. Templates emerge through first-use interviews in `daily-log` and `add-page`, not bundled with setup.
+- **basic** (v0.1.0) — interview-driven setup. The plugin asks which domains you want to track, helps you name top-level folders in your own vocabulary (e.g. `パーソナル / 仕事 / システム` or `personal / work / system`), and writes only the minimum scaffold: one root index per top folder + one wiki-index and wiki-log per domain. Templates emerge through first-use interviews in `add-page` and other companion skills, not bundled with setup. `daily-log` is available as an optional add-on starting v0.1.1+ for users who want a daily-journal workflow.
 - **pro** (v0.2.0+) — adds Capture/Compile/Deep ingest tiers, `verified` status flow, sub-wiki scaffolding, batch-approval ingestion.
 
 ## Localization

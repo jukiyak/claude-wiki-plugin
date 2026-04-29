@@ -1,6 +1,6 @@
 {
   "name": "claude-wiki",
-  "version": "0.1.0-dev.4",
+  "version": "0.1.0-dev.5",
   "description": "Karpathy LLM Wiki pattern for Obsidian + Claude Cowork. JP default, EN fallback. Pre-release: interview-driven setup-claude-wiki landing; daily-log / add-page / query-wiki / lint-vault arrive in subsequent dev releases before the v0.1.0 stable cut.",
   "author": {
     "name": "Jukiya Kinjo",
