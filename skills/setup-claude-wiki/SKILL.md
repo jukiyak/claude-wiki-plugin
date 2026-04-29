@@ -74,31 +74,67 @@ The skill itself (this SKILL.md) and plugin metadata stay in English regardless 
 
 ## Step 4 — Orientation
 
-Send a short message in the chosen locale.
+Send a short message in the chosen locale. The orientation has three parts: division of labor, what setup creates today, and how the wiki grows over time (visual).
 
 **LOCALE = ja:**
-```
+````
 これから、あなたの knowledge base を作るための簡単なインタビューを行います。
 
-claude-wiki の役割分担:
-- あなた → 何を記録する価値があるかを決める / ソースを集める
-- Claude → ファイリング、相互参照、ログを担当
-- Obsidian → 形を表示する
+## 役割分担 (3 階層モデル)
+- **あなた** — 何を記録する価値があるかを決める、ソースを集める
+- **Claude** — ファイリング、相互参照、ログを担当
+- **Obsidian** — 形を表示する
 
-まず最小スカフォールドだけを作ります。各ドメインに「索引」と「ログ」の 2 ファイルだけ。中身は実際にコンテンツが集まってから足します。
+## セットアップで作るのは最小限のスカフォールド
+
+各ドメインに「索引 (`{ドメイン}.md`)」と「ログ (`{ドメイン}-log.md`)」の 2 ファイルだけ。中身は空。
+
+## これから wiki が育っていく流れ (「健康」ドメインを例に)
+
 ```
+セットアップ直後 (今):           最初のソースを置いた後:        wiki ページ生成後:
+
+健康/                            健康/                          健康/
+├── 健康.md (空の索引)           ├── 健康.md                   ├── 健康.md ← 索引が成長
+└── 健康-log.md (init のみ)      ├── 健康-log.md               ├── 健康-log.md ← ingest event
+                                 └── raw/                       ├── 睡眠の科学.md ← Claude 生成
+                                     └── 睡眠論文.pdf            └── raw/
+                                          ↑                          └── 睡眠論文.pdf
+                                          あなたが置く
+```
+
+ソースが累積するほど Claude が cross-reference を維持し、wiki が compounding していきます。**あなたは sourcing と direction、Claude が bookkeeping** の分担です。
+````
 
 **LOCALE = en:**
-```
+````
 I'll walk you through a short interview to set up your knowledge base.
 
-claude-wiki's division of labor:
-- You — decide what's worth tracking, gather sources
-- Claude — handles filing, cross-references, logs
-- Obsidian — displays the shape
+## Three-layer ownership model
+- **You** — decide what's worth tracking, gather sources
+- **Claude** — handles filing, cross-references, logs
+- **Obsidian** — displays the shape
 
-We start with the absolute minimum: an index and a log per domain. Real content lands later, as you actually capture it.
+## What setup creates today: the absolute minimum
+
+Each domain gets only an index (`{domain}.md`) and a log (`{domain}-log.md`). Empty bodies.
+
+## How the wiki grows over time (using a "health" domain as an example)
+
 ```
+Right after setup:               After you drop a source:        After Claude generates a page:
+
+health/                          health/                         health/
+├── health.md (empty index)      ├── health.md                  ├── health.md ← index grows
+└── health-log.md (init only)    ├── health-log.md              ├── health-log.md ← ingest event
+                                 └── raw/                        ├── sleep-science.md ← Claude
+                                     └── sleep-paper.pdf         └── raw/
+                                          ↑                          └── sleep-paper.pdf
+                                          you drop it
+```
+
+As sources accumulate, Claude maintains cross-references and the wiki compounds. **You source and direct; Claude does the bookkeeping.**
+````
 
 ---
 
@@ -124,33 +160,66 @@ Read the user's reply as a list of domain names. Do not transform their wording 
 
 ## Step 6 — Categorize and name
 
-Propose a folder structure for the user's domains. The proposal must:
+Propose a folder structure for the user's domains, then iterate until they approve.
 
-### 6a. Group into top-level folders (when there are ≥4 domains)
+### 6a. Default 4-section structure (start here)
 
-Group the user's domains into 2-3 top-level buckets. Suggest natural-language names for each bucket. Do **not** force the canonical English names (`self/`, `work/`, `system/`) — show them as one option among several, and adapt to the user's locale.
+Lead the proposal with the **4-section pattern** below. It matches how working professionals usually organize knowledge: `Inbox` for unsorted, `Work` for professional content, `Private` for personal content, `System` for cross-domain notes. The user's Step 5 domains are slotted under Work or Private using Claude's judgment (ask the user when a domain could go either way).
 
-**Default candidates (LOCALE = ja):**
+**Default 4-section template (LOCALE = ja):**
 
-| Conceptual bucket | Candidate names (user picks one or supplies their own) |
-|:--|:--|
-| Personal / private | `パーソナル` (default) / `プライベート` / `個人` / `自分` |
-| Work / business | `仕事` (default) / `職場` / `業務` / their business name |
-| Cross-domain / meta | `システム` (default) / `共通` / `共有` / `参照` / `Meta` / `基盤` |
+```
+your-vault/
+├── README.md
+├── Inbox/                  ← 未分類ノートの着地点
+│   └── Inbox.md
+├── 仕事/                   ← 職業・業務関連 (Step 5 の仕事系ドメインをここに)
+│   ├── 仕事.md
+│   └── (Step 5 で挙げた仕事関連のドメイン)
+├── パーソナル/             ← 個人・プライベート関連 (Step 5 の私的ドメインをここに)
+│   ├── パーソナル.md
+│   └── (Step 5 で挙げた個人関連のドメイン)
+└── システム/               ← 領域横断ノート (用語集、メタ docs など)
+    └── システム.md
+```
 
-The cross-domain bucket holds notes that span both work and private (e.g. sleep logs, glossaries, the wiki's own meta docs). General users usually want one too — propose it.
+**Default 4-section template (LOCALE = en):**
 
-**Default candidates (LOCALE = en):**
+```
+your-vault/
+├── README.md
+├── Inbox/
+│   └── Inbox.md
+├── Work/
+│   ├── Work.md
+│   └── (Step 5 work-related domains)
+├── Private/
+│   ├── Private.md
+│   └── (Step 5 private-related domains)
+└── System/
+    └── System.md
+```
 
-| Conceptual bucket | Candidate names |
-|:--|:--|
-| Personal / private | `personal` (default) / `private` / `self` |
-| Work / business | `work` (default) / business name |
-| Cross-domain / meta | `system` (default) / `shared` / `reference` / `meta` |
+**Customization — the user can:**
 
-### 6b. Allow flat structure (when there are ≤3 domains)
+- **Rename** any top folder to fit their vocabulary (canonical defaults are `仕事 / パーソナル / システム` for JP, `Work / Private / System` for EN, but `業務 / プライベート / 共通`, business name, etc. are equally valid)
+- **Drop Work or Private** if they don't have content for one of them — don't force-create empty top folders
+- **Add an additional top-level folder** if a domain doesn't fit Work or Private (e.g. dedicated `家族` / `Family` section)
+- **Move a domain** between Work and Private during the modify loop
 
-Offer flat as an alternative: each domain gets its own folder at the vault root, no top-level grouping. Useful for small wikis. In flat mode, no root-index files for top folders are written — each domain's wiki-index is the closest index to its files.
+`Inbox/` and `System/` (or their renamed equivalents) **always remain in the scaffold** — see 6c.
+
+**Top-folder name candidates by locale:**
+
+| Concept | LOCALE = ja candidates | LOCALE = en candidates |
+|:--|:--|:--|
+| Work / business | `仕事` (default) / `職場` / `業務` / `{ユーザーの事業名}` | `Work` (default) / `business` / `{user's business name}` |
+| Private / personal | `パーソナル` (default) / `プライベート` / `個人` / `自分` | `Private` (default) / `personal` / `self` |
+| Cross-domain / meta | `システム` (default) / `共通` / `共有` / `参照` / `Meta` / `基盤` | `System` (default) / `shared` / `reference` / `meta` |
+
+### 6b. Flat structure (only when 4-section is overkill)
+
+For very small wikis (≤2 user-named domains and the user explicitly prefers flat), offer flat as an alternative: domains live directly at the vault root with no Work/Private wrapping. `Inbox/` and `System/` remain mandatory. Flat is **opt-in** — don't propose it unless the 4-section default would create empty Work or Private folders, or the user requests it.
 
 ### 6c. Always include `Inbox/` and `System/` (or locale equivalent)
 
