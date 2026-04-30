@@ -10,14 +10,18 @@ The current released version is **v0.0.1**, a **distribution-pipeline validation
 - Cowork on macOS (and later Windows) accepts the plugin
 - Auto-update via the GitHub marketplace is reliable
 
-**v0.1.0 is in development** on `main` (no separate dev branch). All four v0.1.0 skills have shipped (currently `0.1.0-dev.N` pre-release tags):
+**v0.1.0 is in development** on `main` (no separate dev branch). All v0.1.0 deliverables have shipped (currently `0.1.0-dev.N` pre-release tags):
 
+Skills:
 1. `setup-claude-wiki` — interview-driven vault scaffold (asks language + domains, writes minimum 4-section structure)
 2. `add-page` — ingest interview + Batch Approval Plan (touches page + index + log per Karpathy Principle #5)
 3. `lint-vault` — schema / hygiene / structural lint with tier-based Batch Approval (17 rules, file-level + rule-level modes)
 4. `query-wiki` — hybrid index-first reading + grep fallback, markdown / table / Mermaid synthesis with `[[Page]]` citations, auto-offer graduation back to wiki
 
-The `.obsidian/` write-guard hook + 統合 dogfood follow before v0.1.0 stable release. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
+Hook:
+- `obsidian-write-guard` — PreToolUse guard that blocks Write/Edit/NotebookEdit and destructive Bash operations targeting the vault's `.obsidian/` directory (workspace.json, plugins/, themes/, etc.). Auto-registered on plugin install. Override via `CLAUDE_WIKI_GUARD_DISABLE=1` env var for rare manual edits.
+
+統合 dogfood + `/ultrareview` follow before v0.1.0 stable release. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
 
 Real features (wiki page management, query-with-citations, automated lint, Capture/Compile/Deep ingest tiers, verified-page gates) ship at **v0.1.0** and beyond.
 
@@ -114,6 +118,10 @@ claude-wiki/
 ├── .claude-plugin/
 │   ├── marketplace.json    # Marketplace catalog (used by GitHub install)
 │   └── plugin.json          # Plugin manifest
+├── hooks/
+│   └── hooks.json           # PreToolUse hook declaration (auto-registered)
+├── scripts/
+│   └── obsidian-write-guard.sh  # Hook implementation (bash + jq)
 ├── skills/
 │   ├── setup-claude-wiki/
 │   │   └── SKILL.md         # Interview-driven vault scaffold (shipped)
