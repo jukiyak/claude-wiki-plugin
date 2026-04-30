@@ -122,7 +122,13 @@ Required keys (per locale):
 
 If any required key is absent, **auto-fix**: add the missing key with sensible default:
 - `タグ`/`tags` → `[]`
-- `カテゴリ`/`categories` → `[]` (or single-element if folder-walk-up resolves a parent)
+- `カテゴリ`/`categories` → resolve via **folder-walk-up algorithm**:
+  1. Start at the file's parent directory
+  2. Walk up the directory tree level by level
+  3. At each level, check whether `<dirname>/<dirname>.md` exists in that directory AND has `type: wiki-index` or `root-index` (or JP equivalents `索引` / `ルート索引`)
+  4. If found: set `categories: ["[[<dirname>]]"]` (the first match)
+  5. If reach vault root with no match: leave `categories: []`
+  6. Stop the walk at hardcoded domain root boundaries when present (`inbox`, `system`, `work`, `self`, `_pending` per canonical, plus user-configured root-indexes detected via Step 2.3 inventory)
 - `ステータス`/`status` → `下書き`/`draft`
 - `更新日`/`updated` → today's date (quoted)
 - `まとめ`/`summary` → empty string `""`
@@ -136,7 +142,14 @@ Valid values:
 - JP: `ルート索引`, `索引`, `ログ`, `wikiページ`
 - EN: `root-index`, `wiki-index`, `wiki-log`, `wiki-page`
 
-If invalid (e.g. legacy `reference`, `wiki` (canonical bare value, plugin uses `wiki-page`), or arbitrary), mark as **review** with suggested correction based on filename and folder context.
+If invalid (e.g. legacy `reference`, `wiki` (canonical bare value, plugin uses `wiki-page`), or arbitrary), mark as **review** with a suggested correction inferred from filename + folder context:
+
+- File ends with `-log.md` → suggest `wiki-log` / `ログ`
+- File basename equals parent dir name (`health/health.md`) → suggest `wiki-index` / `索引`
+- File at vault top-level domain root (under `inbox/`, `system/`, etc., basename matches dir) → suggest `root-index` / `ルート索引`
+- Otherwise → suggest `wiki-page` / `wikiページ`
+
+If the suggestion confidence is low (e.g. the file doesn't match any pattern), surface as Review with no suggestion — let the user decide.
 
 #### A3 — Status enum value valid
 
@@ -160,7 +173,7 @@ Skip this rule for vaults in EN locale (detected via majority vote, see add-page
 
 #### A6 — Locale consistency
 
-Within one file, all frontmatter keys should be JP or all EN — never mixed (e.g. `タイプ: ...\ntags: ...`). Mixed → **review** (user decides which way to migrate; v0.2.0+ will ship a migration skill).
+Within one file, all frontmatter keys should be JP or all EN — never mixed (e.g. `タイプ: ...\ntags: ...`). Mixed → **review**, with a **suggested target locale** based on the **vault-wide majority vote** from Step 2.1 (the locale used by most files wins). User decides whether to accept the suggestion or pick the other locale; v0.2.0+ will ship an automated migration skill that applies this choice atomically.
 
 #### A7 — Retired keys dropped
 
@@ -194,7 +207,13 @@ For v0.1.0, prefer **review** for the first case (adding a verified_date is a me
 
 #### A10 — `categories` link resolves
 
-Each `[[X]]` wikilink in `categories` should resolve to an existing wiki-index file (`<X>/<X>.md` with `type: wiki-index` or `root-index`). If unresolved or points to a non-index file → **review** with suggested correction.
+Each `[[X]]` wikilink in `categories` should resolve to an existing wiki-index file (`<X>/<X>.md` with `type: wiki-index` or `root-index`). If unresolved or points to a non-index file → **review**.
+
+**Suggested correction strategy:**
+1. Run `obsidian search query="X"` to find any file with that title (not just wiki-indexes)
+2. If a wiki-index exists with similar name (typo distance ≤ 2 chars), suggest the close match
+3. If the file's folder-walk-up (per A1 algorithm) yields a different valid parent, suggest that
+4. Otherwise: surface as Review with no suggestion ("manual decision needed")
 
 ### B. Kepano hygiene rules (4) — delegated to obsidian-cli
 
@@ -287,206 +306,19 @@ Compute counts:
 
 Present findings in one of two modes based on total count (Step 3):
 
-- ≤ 20 findings → **file-level mode** (Template L.A / L.B, inline only)
-- > 20 findings → **rule-level mode** (Template L.RL, inline + lint-report.md dry-run file)
+- ≤ 20 findings → **file-level mode** (Templates L.A / L.B, inline only)
+- > 20 findings → **rule-level mode** (Templates L.RL.A / L.RL.B + lint-report.md dry-run file)
 
-### File-level mode (≤ 20 findings)
+The full text of each template is in **`references/templates.md`** — read that file when you need the exact body to render.
 
-For small vaults or incremental lint passes. Show all findings inline grouped by tier, then by rule, no domain grouping. User approves once.
+Templates available:
 
-#### Template L.A — file-level, LOCALE = ja
-
-```markdown
-Lint レポート: <vault-path>
-
-スキャン: 17 rules、<N> files、<X> 件 findings (🟢 Trivial: <T>、🟡 Standard: <S>、🔴 Review: <R>)
-
-🟢 Trivial (<T> 件、機械的 fix)
-### A4 [Date unquoted]
-- <file-1>: `更新日: 2026-04-30` → `'2026-04-30'`
-
-### A7 [Retired keys]
-- <file-1>: `cssclasses` drop
-
-🟡 Standard (<S> 件、deterministic populate)
-### A1 [Required field 不在]
-- <file-1>: `タグ` 追加 (default `[]`)
-
-### A8 [関連 mirroring (dev.9 fix)]
-- <file-1>: body `## 関連` の 4 wikilinks を frontmatter `関連:` に populate
-- <file-2>: 同上、5 wikilinks
-
-🔴 Review (<R> 件、判断必要 — 報告のみ default)
-### A2 [Type enum 不正値]
-- <file-1>: `type: reference` (canonical: `wiki-page`?)
-
-### B1 [Orphan pages]
-- [[<page-1>]]
-
-### C1 [Sub-wiki threshold]
-- `<domain>/`: 4 files — concrete suggestions: <topic-specific>
-
-🔧 Trivial と Standard をまとめて適用しますか？ Review 項目も一緒に walkthrough したい場合は「Review も見たい」と教えてください。特定の rule だけ適用したい場合は「A4 と A8 だけ」のように、何もしない場合はその旨を伝えてもらえれば。
-```
-
-#### Template L.B — file-level, LOCALE = en
-
-```markdown
-Lint report: <vault-path>
-
-Scan: 17 rules, <N> files, <X> findings (🟢 Trivial: <T>, 🟡 Standard: <S>, 🔴 Review: <R>)
-
-🟢 Trivial (<T>, mechanical)
-### A4 [Date unquoted]
-- <file-1>: `updated: 2026-04-30` → `'2026-04-30'`
-### A7 [Retired keys]
-- <file-1>: drop `cssclasses`
-
-🟡 Standard (<S>, deterministic populate)
-### A1 [Missing required field]
-- <file-1>: add `tags` (default `[]`)
-### A8 [contexts mirroring]
-- <file-1>: populate `contexts:` from 4 body `## Related` wikilinks
-
-🔴 Review (<R>, judgment required — report-only default)
-### A2 [Invalid type enum]
-- <file-1>: `type: reference` (canonical: `wiki-page`?)
-### B1 [Orphan pages]
-- [[<page-1>]]
-### C1 [Sub-wiki threshold]
-- `<domain>/`: 4 files — concrete suggestions: <topic-specific>
-
-🔧 Apply Trivial + Standard together? If you'd like to walk through Review items too, just say so. To apply only specific rules, e.g. "only A4 and A8". Or just say "skip" to leave things as-is.
-```
-
-### Rule-level mode (> 20 findings) — initial migration UX
-
-For large vaults (>20 findings). Two outputs in parallel:
-
-1. **lint-report.md** written to vault root — full structured report for offline review in Obsidian
-2. **Inline rule-level summary** in chat — interactive approval per tier and per rule
-
-#### Step 4.1 — Write lint-report.md (dry-run artifact)
-
-Overwrite (single snapshot per `/lint-vault` invocation):
-
-```yaml
----
-"タイプ": ログ
-"タグ": [lint, dry-run, vault-health]
-"カテゴリ": []
-"ステータス": 下書き
-"更新日": 'YYYY-MM-DD'
-"まとめ": "Lint dry-run report — review in Obsidian, then approve in chat"
-"出典": []
-"エイリアス": []
----
-
-# Lint dry-run report
-
-Generated: <YYYY-MM-DD HH:MM>
-Mode: rule-level (<X> findings > 20 threshold)
-Vault: <vault-path>
-
-## Tier counts
-- 🟢 Trivial:  <T>
-- 🟡 Standard: <S>
-- 🔴 Review:   <R>
-
-## 🟢 Trivial fixes (will batch-apply on approval)
-
-### A4 [Date unquoted]: <n> items
-- <file-1>
-- <file-2>
-…
-
-### A7 [Retired keys]: <n> items
-- …
-
-## 🟡 Standard fixes (will batch-apply per rule, per domain on approval)
-
-### A1 [Required field 不在]: <n> items
-#### Inbox/ (<n>)
-- …
-#### システム/ (<n>)
-- …
-#### パーソナル/ (<n>)
-- …
-
-### A8 [関連 mirror]: <n> items
-#### …
-
-## 🔴 Review (manual decision; opt-in apply available in chat)
-
-### A2 [Type enum drift]: <n> items
-- <file-1>: `type: reference` → `wiki-page`? (suggested)
-…
-
-### B1 [Orphan pages]: <n> items
-- [[<page-1>]]
-…
-
-### C1 [Sub-wiki threshold]: <n> items
-- …
-
----
-
-To approve: respond in chat. Approve order is Trivial → Standard (per rule, optionally per domain) → optional Review walkthrough.
-```
-
-#### Step 4.2 — Inline rule-level template (LOCALE = ja, abbreviated)
-
-```markdown
-Lint レポート: <vault-path>
-スキャン: 17 rules、<N> files、<X> 件 findings (Threshold 20 超 → rule-level mode)
-
-📄 詳細レポート: vault/lint-report.md (Obsidian で offline review 推奨)
-
-📊 Tier 集計
-  🟢 Trivial:   <T> 件 (A4×<n>、A7×<n>)
-  🟡 Standard:  <S> 件 (A1×<n>、A8×<n>)
-  🔴 Review:    <R> 件 (A2×<n>、B1×<n>、C1×<n>、…)
-
-═══════════════════════════════════════
-🟢 Trivial 一括 apply 提案
-
-  - A4 (date unquoted): <n> 件 (samples: <file-1>, <file-2>, <file-3>)
-  - A7 (retired keys):  <n> 件
-
-  Trivial の <T> 件をまとめて適用しましょうか？ 詳しく見たい rule があれば「A4 を見せて」のように教えてください。やめる場合もその旨を。
-
-═══════════════════════════════════════
-🟡 Standard (rule + domain ごとに承認)
-
-  A1 [Required field 不在]: <n> 件
-    - Inbox/:      <n> 件 (sample: <files>)
-    - システム/:    <n> 件 (sample: <files>)
-    - パーソナル/:  <n> 件 (sample: <files>)
-    - 仕事/:       <n> 件 (sample: <files>)
-
-    A1 を適用しますか？ 「全部」「Inbox とパーソナルだけ」「やめる」「全件見せて」のような答え方で大丈夫です。
-
-  A8 [関連 mirror]: <n> 件
-    - <domain breakdown>
-
-    A8 を適用しますか？ 「全部」「<domain> だけ」「やめる」「全件見せて」のように答えてもらえれば。
-
-═══════════════════════════════════════
-🔴 Review (報告のみ default)
-
-  A2 [Type enum drift]: <n> 件
-    - sample: <file-1>: `type: reference` → `wiki-page`?
-
-  B1 [Orphan pages]: <n> 件
-    - sample: [[<page-1>]]
-
-  C1 [Sub-wiki threshold]: <n> 件
-    - <sample>
-
-  Review 項目を 1 つずつ見ていきますか？ 黙って終了でも OK です (default は skip)。
-```
+- **L.A / L.B** — file-level mode (≤20 findings; tier-grouped inline, no dry-run file), JP and EN
+- **lint-report.md (dry-run)** — written to vault root in rule-level mode; full structured report for offline review in Obsidian
+- **L.RL.A / L.RL.B** — rule-level mode (>20 findings; tier + per-domain breakdown, conversational per-rule prompts), JP and EN
 
 User flow (natural language で interpret):
+
 1. **Trivial**: 一括適用 / やめる / 特定 rule の詳細表示 (例「A4 を見せて」) のいずれかを user の言葉で受ける
 2. **Standard per-rule**: 「全部」「特定 domain だけ」「やめる」「全件見せて」のような answer を解釈
 3. **Review (opt-in)**: Standard 完了後に walkthrough 提案 → 同意なら per-rule で per-finding 確認 (適用 / 飛ばす / この rule もう終わり、のような answer)
@@ -494,10 +326,6 @@ User flow (natural language で interpret):
 Within Review walkthrough:
 - A2/A3/A6/A9-add/A10 (applicable Review rules): per-finding 修正案を提示、user の judgment 求める
 - B1-B4/C1-C3 (advisory Review rules): 表示のみ、auto-skip apply (修正案 propose せず、user 手動 fix 前提)
-
-#### Template L.RL.B — rule-level, LOCALE = en
-
-(Same structure with en labels — Trivial / Standard / Review tier names, domain breakdown. Conversational prompts: "Apply all <T> Trivial fixes?" / "Apply A1 — all of them, just Inbox and Personal, or skip?" / "Walk through Review items?" Mirrors L.RL.A semantics.)
 
 ---
 

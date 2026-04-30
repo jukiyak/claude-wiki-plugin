@@ -121,10 +121,25 @@ OFM details (wikilinks `[[]]`, embeds `![[]]`, callouts `> [!note]`, properties 
 | Source type | Action |
 |:--|:--|
 | **URL** | `defuddle parse <url> --md -o raw/<slug>.md` — saves cleaned markdown to `raw/` by default. The wiki page's `sources` will reference this file. If the user explicitly says "raw に残さなくていい" / "don't save to raw", pass through `defuddle` without `-o` and keep markdown in buffer only (sources will be empty per relaxed policy). |
-| **Existing file (PDF, .md)** | `obsidian read path="raw/<source>"` — Obsidian can read PDFs natively. Last-resort fallback uses Read tool. |
+| **Existing file (PDF, .md)** | First check the path exists — if not, stop and ask the user: 「`raw/<source>` が見つかりません。先にファイルを置くか、別のソース指定をお願いできますか？」 If exists, read with `obsidian read path="raw/<source>"` (Obsidian renders PDFs natively). Read tool fallback only if obsidian read times out or returns empty. |
 | **Pasted long text** | Use as-is from the conversation buffer. Ask if the user wants it saved to `raw/<slug>.md` for provenance — default no save unless they explicitly want it. |
 
-URL slug derivation: sanitize the URL path (last segment), lowercase, kebab-case, strip query strings. Use `obsidian unique` to avoid collision.
+**URL slug derivation (with example):**
+
+Take the URL's final path segment, lowercase, convert spaces and underscores to hyphens, strip query strings and fragments. Then call `obsidian unique name="<slug>" path="raw"` — if collision exists, append `-<YYYYMMDD>` for today's date.
+
+```
+https://en.wikipedia.org/wiki/Tinnitus       → tinnitus
+https://example.com/sleep_science/why-sleep  → why-sleep
+https://example.com/article?ref=newsletter   → article
+https://blog.foo.com/2026/04/headache-tips/  → headache-tips
+```
+
+**Error handling for `defuddle`:**
+
+- 404 / network error / unreachable URL → stop and tell the user: 「URL `<url>` が defuddle で取得できませんでした (404 or network error)。URL を確認するか、本文をそのまま貼り付けてもらえれば pasted text モードで進めます。」
+- defuddle returns empty markdown (JS-heavy site) → tell the user the page may be SPA-only and offer to fall back to manual paste
+- Don't proceed silently with empty content
 
 #### 3.A.2 — Extract & fact-check
 
@@ -404,151 +419,18 @@ Mention companion skills, flagged with their ship status:
 
 ## Frontmatter templates
 
-These are what the skill emits. They follow canonical (`~/.claude/rules/claude-wiki.md` L74-92) with the v0.1.0-dev.6 plugin-specific rebrand: `type` value for wiki pages is `wiki-page` / `wikiページ` (canonical uses bare `wiki`).
+The full text of each frontmatter scaffold is in **`references/templates.md`** — read that file when you need the exact body to write.
 
-### Template F.A — wiki-page, LOCALE = ja
+Templates available:
 
-```yaml
----
-"タイプ": wikiページ
-"タグ": []
-"カテゴリ": ["[[<親ドメイン索引>]]"]
-"ステータス": 下書き
-"更新日": 'YYYY-MM-DD'
-"まとめ": "<1 行サマリ>"
-"出典": []  # or ["[[raw/<source>]]"]
-"関連": []  # populate with bare wikilinks from body's ## 関連 section per Frontmatter rules. Drop annotations. Skip parent wiki-index.
-"エイリアス": []
----
-```
+- **Template F.A** — wiki-page, LOCALE = ja (`タイプ: wikiページ`)
+- **Template F.B** — wiki-page, LOCALE = en (`type: wiki-page`)
+- **Template F.C** — new wiki-index, LOCALE = ja (new-domain branch, includes empty `## ページ` body)
+- **Template F.D** — new wiki-index, LOCALE = en
+- **Template F.E** — new wiki-log, LOCALE = ja (new-domain branch, includes init + first ingest entries)
+- **Template F.F** — new wiki-log, LOCALE = en
 
-### Template F.B — wiki-page, LOCALE = en
-
-```yaml
----
-type: wiki-page
-tags: []
-categories: ["[[<parent-wiki-index>]]"]
-status: draft
-updated: 'YYYY-MM-DD'
-summary: "<one-line summary>"
-sources: []  # or ["[[raw/<source>]]"]
-contexts: []  # populate with bare wikilinks from body's ## Related section per Frontmatter rules. Drop annotations. Skip parent wiki-index.
-aliases: []
----
-```
-
-### Template F.C — new wiki-index (new-domain branch only), LOCALE = ja
-
-```yaml
----
-"タイプ": 索引
-"タグ": []
-"カテゴリ": ["[[<上位フォルダ名>]]"]
-"ステータス": 下書き
-"更新日": 'YYYY-MM-DD'
-"まとめ": "<ユーザーが Step 3 で説明した、このドメインの 1 行サマリ>"
-"出典": []
-"エイリアス": []
----
-
-# <ドメイン名>
-
-このドメインで追跡している内容のホームページです。
-
-## ページ
-
-- [[<最初のページ>]] — <1 行サマリ>
-
-## 出典
-
-(まだなし)
-
-## ログ
-
-[[<ドメイン名>-log]]
-```
-
-### Template F.D — new wiki-index, LOCALE = en
-
-```yaml
----
-type: wiki-index
-tags: []
-categories: ["[[<top-folder-name>]]"]
-status: draft
-updated: 'YYYY-MM-DD'
-summary: "<one-line user-supplied summary for this domain>"
-sources: []
-aliases: []
----
-
-# <domain-name>
-
-Home for everything tracked under this domain.
-
-## Pages
-
-- [[<first-page>]] — <one-line summary>
-
-## Sources
-
-(none yet)
-
-## Log
-
-[[<domain-name>-log]]
-```
-
-### Template F.E — new wiki-log (new-domain branch), LOCALE = ja
-
-```yaml
----
-"タイプ": ログ
-"タグ": []
-"カテゴリ": ["[[<ドメイン名>]]"]
-"ステータス": 下書き
-"更新日": 'YYYY-MM-DD'
-"まとめ": "<ドメイン名> ドメインの追記専用ログ"
-"出典": []
-"エイリアス": []
----
-
-# <ドメイン名> ログ
-
-## [YYYY-MM-DD] ingest | <最初のページのソースタイトル>
-- Created: [[<最初のページ>]]
-- Source: <url or raw/<source> or "from-scratch">
-
-## [YYYY-MM-DD] init | <ドメイン名> セットアップ
-- claude-wiki/add-page で新規ドメインとして作成
-- ユーザーの意図: <Step 3 でユーザーが表現した目的の 1 行要約>
-```
-
-### Template F.F — new wiki-log, LOCALE = en
-
-```yaml
----
-type: wiki-log
-tags: []
-categories: ["[[<domain-name>]]"]
-status: draft
-updated: 'YYYY-MM-DD'
-summary: "Append-only activity log for the <domain-name> domain."
-sources: []
-aliases: []
----
-
-# <domain-name> log
-
-## [YYYY-MM-DD] ingest | <first page source title>
-- Created: [[<first-page>]]
-- Source: <url or raw/<source> or "from-scratch">
-
-## [YYYY-MM-DD] init | <domain-name> setup
-- Created via claude-wiki/add-page as a new domain
-- User-stated intent: <one-line paraphrase of the user's Step 3 description>
-```
+All wiki-page templates include `関連: []` / `contexts: []` placeholder; populate it per the Frontmatter rules below.
 
 ---
 

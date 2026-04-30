@@ -139,8 +139,12 @@ Write a markdown answer that:
 
 1. Opens with a 1-2 sentence direct response to the question
 2. Expands with structured sections (use `## Subheading` if the answer is non-trivial)
-3. **Inline citations:** sprinkle `[[Page-Name]]` next to claims that derive from a specific page. Multiple sources for one claim → multiple inline wikilinks: `主因は加齢性難聴 [[耳鳴り]] [[頭痛]]`. Do **not** convert peer mentions into footnotes — keep citations inline so they remain grep-friendly and integrate with Obsidian's backlinks.
-4. Ends with a `## Sources` (JP: `## 出典`) section listing every source page as a wikilink, optionally with a 1-line context note
+3. **Inline citations (mandatory, not optional):** Every claim that derives content from a vault page MUST carry an inline `[[Page-Name]]` wikilink immediately adjacent to that claim. Multiple sources for one claim → multiple inline wikilinks: `主因は加齢性難聴 [[耳鳴り]] [[頭痛]]`. This is dev.9-protected behavior — Cowork-Claude's instinct to "smooth the prose by omitting citations" must be resisted. The wiki value collapses without provenance.
+   - **Single-source claim** (paraphrase from one page): `<claim> [[Page]]`
+   - **Multi-source claim** (synthesis across pages): `<claim> [[Page-1]] [[Page-2]]`
+   - **Synthetic claim** (Cowork inference, no direct vault source): omit the inline wikilink AND flag it in Step 3.4 confidence note as "vault には直接の記述なし、推論ベース"
+   - **Do not** convert citations to footnotes (footnote-style breaks Obsidian backlinks/graph integration)
+4. Ends with a `## Sources` (JP: `## 出典`) section listing every source page as a wikilink with a 1-line context note. The Sources section is the **aggregate provenance list** — each page that contributed material; inline citations are the **per-claim attribution** — they serve different functions and both must appear.
 
 ### 3.2 — Comparison table (when triggered)
 
@@ -168,63 +172,16 @@ Each row's claim should be traceable to a source listed below the table.
 
 When a flow/relationship/timeline/visualization trigger fires (Step 1.2), render a Mermaid block. Pick the diagram type that fits the question:
 
-**Concept relationships** (`〜の関係`, `relationship between`):
+- **`graph LR`** for concept relationships (`〜の関係`, `relationship between`)
+- **`flowchart TD`** for process flow (`〜の流れ`, `flow`, `flowchart`)
+- **`timeline`** for chronologies (`〜のタイムライン`, `timeline of`)
+- **`mindmap`** for hierarchical concept organization
 
-````markdown
-```mermaid
-graph LR
-  ストレス --> 睡眠不足
-  睡眠不足 --> 頭痛
-  カフェイン過剰 --> 睡眠不足
-  カフェイン過剰 --> 頭痛
-```
-````
+Concrete syntax examples for each diagram type are in **`references/mermaid-examples.md`** — read that file when you need a copy-pasteable starter.
 
-**Process flow** (`〜の流れ`, `flow`):
+Each Mermaid block should be followed by a one-line `Sources: [[Page-1]] [[Page-2]] …` so provenance stays visible without the diagram having to encode it.
 
-````markdown
-```mermaid
-flowchart TD
-  A[ソース raw/ に配置] --> B[Claude が読む]
-  B --> C[要点抽出 + ファクトチェック]
-  C --> D[Batch Approval Plan 提示]
-  D --> E{user 承認?}
-  E -->|yes| F[page + index + log を一括書き出し]
-  E -->|no| G[キャンセル]
-```
-````
-
-**Timeline** (`〜のタイムライン`, `timeline of`):
-
-````markdown
-```mermaid
-timeline
-  2026-04-29 : setup-claude-wiki shipped (dev.5)
-  2026-04-30 : add-page shipped (dev.9) : lint-vault shipped (dev.10) : query-wiki shipped (dev.12)
-```
-````
-
-**Mind map** (organizing concepts):
-
-````markdown
-```mermaid
-mindmap
-  root((健康))
-    症状
-      耳鳴り
-      頭痛
-    生活習慣
-      睡眠不足
-      カフェイン
-      アルコール
-    横断
-      ストレス
-```
-````
-
-Mermaid syntax follows the Obsidian native renderer (it uses Mermaid 10+). When unsure about the diagram type, default to `graph LR` for relationships or `flowchart TD` for processes.
-
-Each Mermaid block should be followed by a one-line "Sources: [[Page-1]] [[Page-2]] …" so provenance stays visible without the diagram having to encode it.
+When unsure about the diagram type, default to `graph LR` for relationships or `flowchart TD` for processes.
 
 ### 3.4 — Confidence and gaps
 

@@ -9,7 +9,7 @@
     {
       "name": "claude-wiki",
       "description": "Karpathy LLM Wiki pattern for Obsidian + Claude Cowork. JP default, EN fallback. Requires kepano/obsidian-skills (hard dependency). Pre-release: 4 skills (setup-claude-wiki, add-page, lint-vault, query-wiki) + .obsidian/ write-guard hook shipped; 統合 dogfood follows before v0.1.0 stable cut.",
-      "version": "0.1.0-dev.14",
+      "version": "0.1.0-dev.15",
       "source": "./",
       "author": {
         "name": "Jukiya Kinjo",
