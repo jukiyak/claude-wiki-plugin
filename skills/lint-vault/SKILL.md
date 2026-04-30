@@ -326,11 +326,7 @@ Lint レポート: <vault-path>
 ### C1 [Sub-wiki threshold]
 - `<domain>/`: 4 files — concrete suggestions: <topic-specific>
 
-🔧 Trivial + Standard を一括 apply しますか？ Review は個別承認モードで walkthrough できます。
-  - `yes` — Trivial + Standard apply、Review skip
-  - `yes + review` — apply 後 Review walkthrough へ
-  - `rule IDs` — 指定 rule のみ apply (例: `A4, A8`)
-  - `skip` — 何もしない
+🔧 Trivial と Standard をまとめて適用しますか？ Review 項目も一緒に walkthrough したい場合は「Review も見たい」と教えてください。特定の rule だけ適用したい場合は「A4 と A8 だけ」のように、何もしない場合はその旨を伝えてもらえれば。
 ```
 
 #### Template L.B — file-level, LOCALE = en
@@ -360,11 +356,7 @@ Scan: 17 rules, <N> files, <X> findings (🟢 Trivial: <T>, 🟡 Standard: <S>, 
 ### C1 [Sub-wiki threshold]
 - `<domain>/`: 4 files — concrete suggestions: <topic-specific>
 
-🔧 Apply Trivial + Standard? Review opt-in walkthrough available afterwards.
-  - `yes` — apply Trivial + Standard, skip Review
-  - `yes + review` — apply, then walk Review
-  - `rule IDs` — apply only specified rules (e.g. `A4, A8`)
-  - `skip` — no changes
+🔧 Apply Trivial + Standard together? If you'd like to walk through Review items too, just say so. To apply only specific rules, e.g. "only A4 and A8". Or just say "skip" to leave things as-is.
 ```
 
 ### Rule-level mode (> 20 findings) — initial migration UX
@@ -461,7 +453,7 @@ Lint レポート: <vault-path>
   - A4 (date unquoted): <n> 件 (samples: <file-1>, <file-2>, <file-3>)
   - A7 (retired keys):  <n> 件
 
-  Trivial 全 <T> 件を apply? (yes / skip / show-rule <id>)
+  Trivial の <T> 件をまとめて適用しましょうか？ 詳しく見たい rule があれば「A4 を見せて」のように教えてください。やめる場合もその旨を。
 
 ═══════════════════════════════════════
 🟡 Standard (rule + domain ごとに承認)
@@ -472,12 +464,12 @@ Lint レポート: <vault-path>
     - パーソナル/:  <n> 件 (sample: <files>)
     - 仕事/:       <n> 件 (sample: <files>)
 
-    A1 を apply? (`yes-all` / `yes <domain1>,<domain2>` / `skip` / `show-all`)
+    A1 を適用しますか？ 「全部」「Inbox とパーソナルだけ」「やめる」「全件見せて」のような答え方で大丈夫です。
 
   A8 [関連 mirror]: <n> 件
     - <domain breakdown>
 
-    A8 を apply? (`yes-all` / `yes <domain>` / `skip` / `show-all`)
+    A8 を適用しますか？ 「全部」「<domain> だけ」「やめる」「全件見せて」のように答えてもらえれば。
 
 ═══════════════════════════════════════
 🔴 Review (報告のみ default)
@@ -491,21 +483,21 @@ Lint レポート: <vault-path>
   C1 [Sub-wiki threshold]: <n> 件
     - <sample>
 
-  Review walkthrough を実行? (`yes` / `skip`、default = skip)
+  Review 項目を 1 つずつ見ていきますか？ 黙って終了でも OK です (default は skip)。
 ```
 
-User flow:
-1. **Trivial**: `yes` (一括) or `skip` or `show-rule A4` (詳細表示)
-2. **Standard per-rule**: `yes-all` or `yes Inbox,パーソナル` (per-domain) or `skip` or `show-all`
-3. **Review (opt-in)**: After Standard complete, prompt "Review walkthrough を実行?" → if yes, walk per-rule with per-finding `yes/skip/next-rule`
+User flow (natural language で interpret):
+1. **Trivial**: 一括適用 / やめる / 特定 rule の詳細表示 (例「A4 を見せて」) のいずれかを user の言葉で受ける
+2. **Standard per-rule**: 「全部」「特定 domain だけ」「やめる」「全件見せて」のような answer を解釈
+3. **Review (opt-in)**: Standard 完了後に walkthrough 提案 → 同意なら per-rule で per-finding 確認 (適用 / 飛ばす / この rule もう終わり、のような answer)
 
 Within Review walkthrough:
-- A2/A3/A6/A9-add/A10 (applicable Review rules): per-finding suggestion + yes/skip
-- B1-B4/C1-C3 (advisory Review rules): show + advise but auto-skip apply (no fix to propose)
+- A2/A3/A6/A9-add/A10 (applicable Review rules): per-finding 修正案を提示、user の judgment 求める
+- B1-B4/C1-C3 (advisory Review rules): 表示のみ、auto-skip apply (修正案 propose せず、user 手動 fix 前提)
 
 #### Template L.RL.B — rule-level, LOCALE = en
 
-(Same structure with en labels — Trivial / Standard / Review tier names, domain breakdown, "yes-all" / "yes <domain>" / "skip" prompts. Mirrors L.RL.A semantics.)
+(Same structure with en labels — Trivial / Standard / Review tier names, domain breakdown. Conversational prompts: "Apply all <T> Trivial fixes?" / "Apply A1 — all of them, just Inbox and Personal, or skip?" / "Walk through Review items?" Mirrors L.RL.A semantics.)
 
 ---
 
@@ -539,7 +531,7 @@ Apply in tier order; each tier completes before the next begins:
 
 1. **🟢 Trivial tier** (if user approved at Step 4): apply A4, A5, A7, A9-safe in one pass — text-level mechanical fixes
 2. **🟡 Standard tier** (per-rule, per-domain user approvals from Step 4): apply A1, A8 in approved scope
-3. **🔴 Review tier** (only if user opted in at Step 4): walk per-finding with `yes/skip/next-rule` prompts; apply A2/A3/A6/A9-add/A10 as confirmed; B1-B4 and C1-C3 are advisory-only and produce no writes
+3. **🔴 Review tier** (only if user opted in at Step 4): walk per-finding with conversational prompts (適用しますか / 次の rule に進みますか / この rule もう終わり、など自然語の answer を受ける); apply A2/A3/A6/A9-add/A10 as confirmed; B1-B4 and C1-C3 are advisory-only and produce no writes
 4. **Bump `updated` / `更新日`** on every file actually modified — content changed per canonical L96. Skip files where all approved fixes were no-ops or skipped.
 5. **Log the lint pass** to vault-level `lint-log.md` (see 5.4)
 6. **Mode-specific cleanup**: in rule-level mode, leave `lint-report.md` in place (user may want to keep it as a snapshot); subsequent `/lint-vault` runs overwrite it. Optionally suggest archive (move to `lint-report-<date>.md`) if user requests history.

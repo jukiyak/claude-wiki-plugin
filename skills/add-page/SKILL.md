@@ -197,7 +197,7 @@ LOG:   <domain>-log.md に ingest entry を先頭追加
 <新ページの frontmatter + 本文 を実寸表示>
 ---
 
-この計画で進めますか？ (yes / 修正点を教えてください)
+この計画で進めて OK ですか？ 修正したい点があれば教えてください。
 ```
 
 ### Template 4.B — LOCALE = en
@@ -232,7 +232,7 @@ LOG:   prepend ingest entry to <domain>-log.md
 <frontmatter + body of the new page, full size>
 ---
 
-Proceed with this plan? (yes / tell me what to change)
+Proceed with this plan? Or let me know what to change.
 ```
 
 If the user requests changes, revise the plan and present again. Loop until approved or stopped.

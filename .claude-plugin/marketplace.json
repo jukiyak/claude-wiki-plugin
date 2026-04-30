@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "claude-wiki",
-      "description": "Karpathy LLM Wiki pattern for Obsidian + Claude Cowork. JP default, EN fallback. Requires kepano/obsidian-skills (hard dependency). Pre-release: setup-claude-wiki + add-page + lint-vault shipped; query-wiki arrives next before the v0.1.0 stable cut.",
-      "version": "0.1.0-dev.11",
+      "description": "Karpathy LLM Wiki pattern for Obsidian + Claude Cowork. JP default, EN fallback. Requires kepano/obsidian-skills (hard dependency). Pre-release: setup-claude-wiki + add-page + lint-vault + query-wiki shipped; .obsidian/ write-guard hook + 統合 dogfood follow before v0.1.0 stable cut.",
+      "version": "0.1.0-dev.13",
       "source": "./",
       "author": {
         "name": "Jukiya Kinjo",
