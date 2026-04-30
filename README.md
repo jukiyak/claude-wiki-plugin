@@ -10,7 +10,12 @@ The current released version is **v0.0.1**, a **distribution-pipeline validation
 - Cowork on macOS (and later Windows) accepts the plugin
 - Auto-update via the GitHub marketplace is reliable
 
-**v0.1.0 is in development** on `main` (no separate dev branch). The first piece — an interview-driven `setup-claude-wiki` that asks the user which domains they want to track, helps them name top-level folders in their own vocabulary, and writes only the minimum scaffold (one root index per top folder + one wiki-index and wiki-log per domain) — has landed (currently `0.1.0-dev.N` pre-release tags). The remaining pieces (`add-page`, `query-wiki`, `lint-vault`, plus the `.obsidian/` write-guard hook) follow over the next few sessions. v0.1.0 will be released once those four skills and the hook are ready. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
+**v0.1.0 is in development** on `main` (no separate dev branch). Two skills have shipped (currently `0.1.0-dev.N` pre-release tags):
+
+1. `setup-claude-wiki` — interview-driven vault scaffold (asks language + domains, writes minimum 4-section structure)
+2. `add-page` — ingest interview + Batch Approval Plan (touches page + index + log per Karpathy Principle #5)
+
+The remaining pieces (`query-wiki`, `lint-vault`, plus the `.obsidian/` write-guard hook) follow over the next few sessions. v0.1.0 will be released once those four skills and the hook are ready. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
 
 Real features (wiki page management, query-with-citations, automated lint, Capture/Compile/Deep ingest tiers, verified-page gates) ship at **v0.1.0** and beyond.
 
@@ -18,7 +23,8 @@ Real features (wiki page management, query-with-citations, automated lint, Captu
 
 - **Claude Desktop** ([download](https://claude.com/download)) on macOS or Windows
 - **Cowork mode** — available on Pro / Max / Team / Enterprise plans
-- **Obsidian** is the recommended viewer for the resulting vault, but not strictly required for v0.0.1
+- **[kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)** — **hard dependency** for `/add-page` and other v0.1.0 ingest skills. Install via Cowork → Customize → `+` → Claude marketplace url → `https://github.com/kepano/obsidian-skills`. The plugin uses `obsidian-cli` (vault read/write), `obsidian-markdown` (OFM correctness), and `defuddle` (URL ingest).
+- **Obsidian app must be running** when invoking `/add-page` so `obsidian-cli` can resolve the active vault. The setup skill (`/setup-claude-wiki`) does not require Obsidian to be running.
 
 ## Installation
 
@@ -74,8 +80,8 @@ The **basic** profile aims at general PKM users (journals, reading notes, study)
 
 ## Profiles
 
-- **basic** (v0.1.0) — interview-driven setup. The plugin asks which domains you want to track, helps you name top-level folders in your own vocabulary (e.g. `パーソナル / 仕事 / システム` or `personal / work / system`), and writes only the minimum scaffold: one root index per top folder + one wiki-index and wiki-log per domain. Templates emerge through first-use interviews in `add-page` and other companion skills, not bundled with setup. `daily-log` is available as an optional add-on starting v0.1.1+ for users who want a daily-journal workflow.
-- **pro** (v0.2.0+) — adds Capture/Compile/Deep ingest tiers, `verified` status flow, sub-wiki scaffolding, batch-approval ingestion.
+- **basic** (v0.1.0) — interview-driven setup + Compile-tier ingest. The plugin asks which domains you want to track, helps you name top-level folders in your own vocabulary (e.g. `パーソナル / 仕事 / システム` or `personal / work / system`), and writes only the minimum scaffold. `add-page` adds wiki pages via Batch Approval Plan (CREATE / UPDATE / INDEX / LOG presented once, user approves the batch). All ingests start as `draft`. Templates emerge through first-use interviews. `daily-log` is available as an optional add-on starting v0.1.1+.
+- **pro** (v0.2.0+) — adds Capture/Compile/Deep ingest tier semantics with domain auto-classification, `verified`-status auto-reset on edits, automatic sub-wiki scaffolding (v0.1.0 only nudges), and a JP↔EN migration skill.
 
 ## Localization
 
@@ -107,8 +113,10 @@ claude-wiki/
 │   ├── marketplace.json    # Marketplace catalog (used by GitHub install)
 │   └── plugin.json          # Plugin manifest
 ├── skills/
-│   └── setup-claude-wiki/
-│       └── SKILL.md
+│   ├── setup-claude-wiki/
+│   │   └── SKILL.md         # Interview-driven vault scaffold (shipped)
+│   └── add-page/
+│       └── SKILL.md         # Ingest interview + Batch Approval Plan (shipped)
 └── README.md
 ```
 
