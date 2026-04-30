@@ -10,12 +10,13 @@ The current released version is **v0.0.1**, a **distribution-pipeline validation
 - Cowork on macOS (and later Windows) accepts the plugin
 - Auto-update via the GitHub marketplace is reliable
 
-**v0.1.0 is in development** on `main` (no separate dev branch). Two skills have shipped (currently `0.1.0-dev.N` pre-release tags):
+**v0.1.0 is in development** on `main` (no separate dev branch). Three skills have shipped (currently `0.1.0-dev.N` pre-release tags):
 
 1. `setup-claude-wiki` — interview-driven vault scaffold (asks language + domains, writes minimum 4-section structure)
 2. `add-page` — ingest interview + Batch Approval Plan (touches page + index + log per Karpathy Principle #5)
+3. `lint-vault` — schema / hygiene / structural lint with Batch Approval auto-fix (17 rules)
 
-The remaining pieces (`query-wiki`, `lint-vault`, plus the `.obsidian/` write-guard hook) follow over the next few sessions. v0.1.0 will be released once those four skills and the hook are ready. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
+The remaining piece (`query-wiki` + `.obsidian/` write-guard hook) follows next. v0.1.0 will be released once that ships and is dogfood-validated. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
 
 Real features (wiki page management, query-with-citations, automated lint, Capture/Compile/Deep ingest tiers, verified-page gates) ship at **v0.1.0** and beyond.
 
@@ -115,8 +116,10 @@ claude-wiki/
 ├── skills/
 │   ├── setup-claude-wiki/
 │   │   └── SKILL.md         # Interview-driven vault scaffold (shipped)
-│   └── add-page/
-│       └── SKILL.md         # Ingest interview + Batch Approval Plan (shipped)
+│   ├── add-page/
+│   │   └── SKILL.md         # Ingest interview + Batch Approval Plan (shipped)
+│   └── lint-vault/
+│       └── SKILL.md         # Schema/hygiene/structural lint (shipped)
 └── README.md
 ```
 
