@@ -2,3 +2,21 @@
 *.swp
 *.swo
 node_modules/
+
+# macOS resource forks
+._*
+
+# user-local Claude Code state (per-user permissions, not shared)
+.claude/settings.local.json
+
+# editor / IDE
+.idea/
+.vscode/
+
+# build / cache
+dist/
+build/
+.cache/
+
+# logs
+*.log

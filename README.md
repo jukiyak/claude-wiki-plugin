@@ -2,32 +2,27 @@
 
 A Claude Cowork plugin that implements [Andrej Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) on top of Obsidian. Build a personal knowledge base where the LLM does all the bookkeeping — summaries, cross-references, contradictions, and consistency — while you stay in charge of sourcing and direction.
 
-## Status: v0.0.1 (pipeline validation stub) — v0.1.0 in development
+## Status: v0.1.0 — first feature release
 
-The current released version is **v0.0.1**, a **distribution-pipeline validation stub** that verifies:
-
-- The `.plugin` build → `.claude-plugin/marketplace.json` → GitHub marketplace install flow works end-to-end
-- Cowork on macOS (and later Windows) accepts the plugin
-- Auto-update via the GitHub marketplace is reliable
-
-**v0.1.0 is in development** on `main` (no separate dev branch). All v0.1.0 deliverables have shipped (currently `0.1.0-dev.N` pre-release tags):
+v0.1.0 ships the basic-profile MVP — 4 skills + 2 hooks + a bundled canonical schema. See the [v0.1.0 release notes](https://github.com/jukiyak/claude-wiki-plugin/releases/tag/v0.1.0) for the full announcement.
 
 Skills:
+
 1. `setup-claude-wiki` — interview-driven vault scaffold (asks language + domains, writes minimum 4-section structure)
 2. `add-page` — ingest interview + Batch Approval Plan (touches page + index + log per Karpathy Principle #5)
 3. `lint-vault` — schema / hygiene / structural lint with tier-based Batch Approval (17 rules, file-level + rule-level modes)
 4. `query-wiki` — hybrid index-first reading + grep fallback, markdown / table / Mermaid synthesis with `[[Page]]` citations, auto-offer graduation back to wiki
 
-Hooks:
-- `obsidian-write-guard` — **PreToolUse** guard that blocks Write/Edit/NotebookEdit and destructive Bash operations targeting the vault's `.obsidian/` directory (workspace.json, plugins/, themes/, etc.). Auto-registered on plugin install. Override via `CLAUDE_WIKI_GUARD_DISABLE=1` env var for rare manual edits.
-- `vault-first-reminder` — **SessionStart** hook that injects the Vault-First Consultation rule into Claude's context at session start. Ensures Claude consults the vault first before reaching for general knowledge or web on substantive questions. Override via `CLAUDE_WIKI_VAULT_FIRST_DISABLE=1`. Full rule lives in `CANONICAL.md` (Vault-First Consultation section).
+Hooks (auto-registered on plugin install):
+
+- `obsidian-write-guard` — **PreToolUse** guard that blocks Write/Edit/NotebookEdit and destructive Bash operations targeting the vault's `.obsidian/` directory (workspace.json, plugins/, themes/, etc.). Override via `CLAUDE_WIKI_GUARD_DISABLE=1` for rare manual edits.
+- `vault-first-reminder` — **SessionStart** hook that injects the Vault-First Consultation rule into Claude's context at session start. Ensures Claude consults the vault first before reaching for general knowledge or web on substantive questions. Override via `CLAUDE_WIKI_VAULT_FIRST_DISABLE=1`.
 
 Bundled schema:
-- `CANONICAL.md` at the plugin root — single source of truth referenced by every skill via `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md`. Distributed with the plugin so all users get the same schema, no separate setup required.
 
-統合 dogfood + `/ultrareview` follow before v0.1.0 stable release. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
+- `CANONICAL.md` at the plugin root — single source of truth referenced by every skill via `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md`. Distributed with the plugin so every user has the same schema, no separate setup required.
 
-Real features (wiki page management, query-with-citations, automated lint, Capture/Compile/Deep ingest tiers, verified-page gates) ship at **v0.1.0** and beyond.
+`daily-log` (optional journaling skill) and the v0.2.0+ pro profile (Capture/Compile/Deep ingest tiers, verified-page auto-flow, automatic sub-wiki scaffolding, JP↔EN migration) follow in subsequent releases — see the Roadmap below.
 
 ## Requirements
 
@@ -65,26 +60,18 @@ After install:
    - `セットアップ`
    - `/setup-claude-wiki`
 
-**On v0.0.1 (the current release):** the skill writes a single `Hello-claude-wiki.md` file confirming the pipeline works.
+The setup skill conducts an interview — asks your language (日本語 / English), what domains you want to track (e.g. 仕事, 個人, 健康), helps you name top-level folders in your own vocabulary, then writes only the minimum scaffold: one root index per top folder + one wiki-index and wiki-log per domain. No bundled templates, no domain presets — your structure, your vocabulary.
 
-**On v0.1.0-dev (in development):** the skill conducts an interview — asks your language (日本語 / English), what domains you want to track (e.g. 仕事, 個人, 健康), helps you name top-level folders in your own vocabulary, then writes only the minimum scaffold: one root index per top folder + one wiki-index and wiki-log per domain. No bundled templates, no domain presets — your structure, your vocabulary.
-
-## What v0.0.1 verifies
-
-- [x] Plugin is recognized by Cowork
-- [x] Skill triggers fire on natural-language phrases (English and Japanese)
-- [x] The skill can write to the user-selected folder
-- [x] Markdown frontmatter renders cleanly
+After setup, ingest pages with `/add-page`, ask the vault questions with `/query-wiki`, and run `/lint-vault` periodically for schema/hygiene/structural checks.
 
 ## Roadmap
 
-| Version | Scope |
-|:---|:---|
-| **v0.0.1** (current release) | Distribution-pipeline stub |
-| v0.1.0 (in development on `main`) | Basic profile MVP — interview-driven `setup-claude-wiki` (no bundled templates or domain presets — the user's domains and vocabulary drive the scaffold), `add-page`, `query-wiki`, `lint-vault`, plus the `.obsidian/` write-guard hook. Per-skill templates emerge through first-use interviews. |
-| v0.1.1+ (optional add-ons) | `daily-log` skill + Stop reminder hook for users who want a daily-journal workflow. Made optional because journaling is opinionated; not all PKM users do it. |
-| v0.2.0 | Pro profile — Capture / Compile / Deep ingest tiers, verified-page gate, sub-wiki scaffolding, `update-claude-wiki` schema migration, JP↔EN frontmatter migration |
-| v1.0.0 | Stability target — candidate for the Anthropic official marketplace |
+| Version | Status | Scope |
+|:---|:---|:---|
+| **v0.1.0** | **current release** | Basic profile MVP — interview-driven `setup-claude-wiki`, `add-page`, `lint-vault`, `query-wiki` + 2 hooks (`obsidian-write-guard`, `vault-first-reminder`) + bundled `CANONICAL.md`. Compile-tier ingest only. |
+| v0.1.1+ | optional add-ons | `daily-log` skill + Stop reminder hook for users who want a daily-journal workflow. Made optional because journaling is opinionated; not all PKM users do it. `UserPromptSubmit` proactive vault context injection (waiting on upstream Claude Code [Issue #10225](https://github.com/anthropics/claude-code/issues/10225)). |
+| v0.2.0 | planned | Pro profile — Capture / Compile / Deep ingest tiers with domain auto-classification, verified-page auto-reset on edits, automatic sub-wiki scaffolding, `update-claude-wiki` schema migration, JP↔EN frontmatter migration |
+| v1.0.0 | stability target | Candidate for the Anthropic official marketplace |
 
 The **basic** profile aims at general PKM users (journals, reading notes, study). The **pro** profile adds the discipline needed for medical, legal, or research domains where citation provenance matters.
 

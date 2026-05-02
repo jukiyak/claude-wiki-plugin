@@ -122,13 +122,13 @@ Required keys (per locale):
 
 If any required key is absent, **auto-fix**: add the missing key with sensible default:
 - `タグ`/`tags` → `[]`
-- `カテゴリ`/`categories` → resolve via **folder-walk-up algorithm**:
+- `カテゴリ`/`categories` → resolve via **folder-walk-up algorithm** (extends the canonical Tier-2 walk-up — see `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Auto-Read Convention → Parent Detection):
   1. Start at the file's parent directory
   2. Walk up the directory tree level by level
   3. At each level, check whether `<dirname>/<dirname>.md` exists in that directory AND has `type: wiki-index` or `root-index` (or JP equivalents `索引` / `ルート索引`)
   4. If found: set `categories: ["[[<dirname>]]"]` (the first match)
   5. If reach vault root with no match: leave `categories: []`
-  6. Stop the walk at hardcoded domain root boundaries when present (`inbox`, `system`, `work`, `self`, `_pending` per canonical, plus user-configured root-indexes detected via Step 2.3 inventory)
+  6. Stop the walk at hardcoded domain root boundaries when present (`inbox`, `system`, `work`, `self`, `_pending` per canonical) **AND at user-configured root-indexes detected via Step 2.3 inventory** (this last extension goes beyond canonical's hardcoded list — necessary because plugin-installed vaults use user-named domain roots like `仕事/` or `Personal/` that aren't in canonical's list)
 - `ステータス`/`status` → `下書き`/`draft`
 - `更新日`/`updated` → today's date (quoted)
 - `まとめ`/`summary` → empty string `""`

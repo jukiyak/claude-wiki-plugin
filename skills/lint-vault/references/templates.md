@@ -204,4 +204,54 @@ Lint レポート: <vault-path>
 
 ### Template L.RL.B — rule-level, LOCALE = en
 
-(Same structure with en labels — Trivial / Standard / Review tier names, domain breakdown. Conversational prompts: "Apply all <T> Trivial fixes?" / "Apply A1 — all of them, just Inbox and Personal, or skip?" / "Walk through Review items?" Mirrors L.RL.A semantics.)
+```markdown
+Lint report: <vault-path>
+Scan: 17 rules, <N> files, <X> findings (Threshold 20 exceeded → rule-level mode)
+
+📄 Detailed report: vault/lint-report.md (recommended for offline review in Obsidian)
+
+📊 Tier counts
+  🟢 Trivial:   <T> (A4×<n>, A7×<n>)
+  🟡 Standard:  <S> (A1×<n>, A8×<n>)
+  🔴 Review:    <R> (A2×<n>, B1×<n>, C1×<n>, …)
+
+═══════════════════════════════════════
+🟢 Trivial bulk-apply proposal
+
+  - A4 (date unquoted): <n> findings (samples: <file-1>, <file-2>, <file-3>)
+  - A7 (retired keys):  <n> findings
+
+  Apply all <T> Trivial fixes? Let me know if you want to see a specific rule's details (e.g. "show me A4"). "Skip" if you'd rather leave them.
+
+═══════════════════════════════════════
+🟡 Standard (per-rule, optionally per-domain)
+
+  A1 [Missing required field]: <n> findings
+    - inbox/:    <n> (sample: <files>)
+    - system/:   <n> (sample: <files>)
+    - personal/: <n> (sample: <files>)
+    - work/:     <n> (sample: <files>)
+
+    Apply A1? "All of them", "just inbox and personal", "skip", or "show all" — natural-language answers OK.
+
+  A8 [contexts mirror]: <n> findings
+    - <domain breakdown>
+
+    Apply A8? "All", "<domain> only", "skip", or "show all".
+
+═══════════════════════════════════════
+🔴 Review (report-only by default)
+
+  A2 [Type enum drift]: <n> findings
+    - sample: <file-1>: `type: reference` → `wiki-page`?
+
+  B1 [Orphan pages]: <n> findings
+    - sample: [[<page-1>]]
+
+  C1 [Sub-wiki threshold]: <n> findings
+    - <sample>
+
+  Walk through Review items one by one? Saying nothing is fine — default is skip.
+```
+
+(Mirrors L.RL.A semantics; same Trivial → Standard → Review sequence with conversational prompts.)

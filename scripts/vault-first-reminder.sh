@@ -33,7 +33,7 @@ cat >/dev/null
 # Use unquoted heredoc so ${CLAUDE_PLUGIN_ROOT} expands to the real path at hook
 # execution time. Otherwise Claude sees the literal string `${CLAUDE_PLUGIN_ROOT}`
 # in additionalContext and cannot resolve it.
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-<plugin-root-not-set; check Cowork plugin install path>}"
 read -r -d '' VAULT_FIRST_REMINDER <<EOF || true
 [claude-wiki Vault-First Consultation rule]
 

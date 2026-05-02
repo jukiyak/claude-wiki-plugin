@@ -2,6 +2,24 @@
 
 This is the canonical schema for vaults managed by the `claude-wiki` Cowork plugin. All four skills (`setup-claude-wiki`, `add-page`, `lint-vault`, `query-wiki`) and the `.obsidian/` write-guard hook reference this document. Skills locate it via `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` so the path is portable across plugin install locations.
 
+## Contents
+
+- [Vault-First Consultation](#vault-first-consultation) — Claude-side default behavior: consult vault before general knowledge or web
+- [Wiki Structure](#wiki-structure) — folder layout per domain, naming conventions
+- [Hierarchy Roles](#hierarchy-roles) — `type` enum: root-index / wiki-index / wiki-page / wiki-log
+- [Auto-Read Convention](#auto-read-convention) — parent + contexts auto-load on file read; budget 4-7 files
+- [Lifecycle](#lifecycle) — start → research → compile → iterate → reorganize
+- [Wiki Page Frontmatter](#wiki-page-frontmatter) — required/conditional/optional fields, date quoting, `updated` semantics, verification
+- [Sub-Wiki Criteria](#sub-wiki-criteria) — initial scaffolding, 7+ wiki-page reorganization trigger, three reorganization paths
+- [Directory Depth Rule](#directory-depth-rule) — sub-domain test, recursive splits valid, no hard depth cap
+- [Wiki-Link Convention](#wiki-link-convention) — link contextually, not mechanically
+- [Post-Rename Frontmatter Link Repair](#post-rename-frontmatter-link-repair) — fix YAML wikilinks after file rename
+- [Attachment & Asset Convention](#attachment--asset-convention) — `Attachments/` vs `raw/` vs external
+- [Archive Convention](#archive-convention) — `status: archived` + `archived_date`, physical move at 5+
+- [Block ID Convention](#block-id-convention) — `^block-id` on-demand only
+- [Ingest Workflow](#ingest-workflow) — Capture / Compile / Deep tiers; Compile-tier batch approval
+- [Query Output Graduation](#query-output-graduation) — `query→wiki` log prefix, when to suggest promotion
+
 ## Vault-First Consultation
 
 When the user asks a question or makes a request that could plausibly be informed by their curated content, Claude consults the **vault first** — even when the user does not explicitly invoke `/query-wiki`.
