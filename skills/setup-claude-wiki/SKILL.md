@@ -416,7 +416,14 @@ Print a confirmation. Show the created file tree as a tree-list with `computer:/
 
 - README を開いて 3 階層モデルを確認
 - 任意のドメインフォルダ配下で書き始める。Claude が読んでファイリングを手伝います
-- `/add-page` (ページ追加)、`/lint-vault` (vault チェック + auto-fix)、`/query-wiki` (引用付き回答 + 必要なら wiki 化) が使えます (kepano/obsidian-skills が必要、Obsidian 起動中) (`/daily-log` は v0.1.1+ optional)
+
+**今すぐ使えるスキル** (kepano/obsidian-skills + Obsidian 起動中が前提):
+- `/add-page` — ページを追加 (interview + Batch Approval)
+- `/lint-vault` — vault の schema/hygiene/structural チェック (auto-fix 付き)
+- `/query-wiki` — vault に質問 → 引用付き回答 + 必要なら wiki 化
+
+**今後の plugin 更新で追加予定:**
+- `/daily-log` — optional の日次ログスキル (v0.1.1+)
 ```
 
 **LOCALE = en:**
@@ -429,7 +436,14 @@ Each domain has only an index and a log so far — no content yet. From here:
 
 - Open the README to read about the three-layer model
 - Start writing under any domain folder; Claude can read and help file what you produce
-- `/add-page` (page ingest), `/lint-vault` (vault health check + auto-fix), and `/query-wiki` (cited synthesis + graduation) are all available (kepano + Obsidian running) (`/daily-log` is optional, planned for v0.1.1+)
+
+**Available now** (require kepano/obsidian-skills + a running Obsidian):
+- `/add-page` — ingest a new page (interview + Batch Approval)
+- `/lint-vault` — schema / hygiene / structural health check with auto-fix
+- `/query-wiki` — query the vault → cited synthesis, graduate to a wiki page when worth keeping
+
+**Planned in upcoming plugin updates:**
+- `/daily-log` — optional daily-journaling skill (v0.1.1+)
 ```
 
 ---
