@@ -40,7 +40,7 @@ Lint レポート: <vault-path>
 - [[<page-1>]]
 
 ### C1 [Sub-wiki threshold]
-- `<domain>/`: 4 files — concrete suggestions: <topic-specific>
+- `<domain>/`: 7+ wiki-pages — split / wiki/ bucket / status-quo (see CANONICAL.md → Sub-Wiki Criteria for the three options)
 
 🔧 Trivial と Standard をまとめて適用しますか？ Review 項目も一緒に walkthrough したい場合は「Review も見たい」と教えてください。特定の rule だけ適用したい場合は「A4 と A8 だけ」のように、何もしない場合はその旨を伝えてもらえれば。
 ```
@@ -70,7 +70,7 @@ Scan: 17 rules, <N> files, <X> findings (🟢 Trivial: <T>, 🟡 Standard: <S>, 
 ### B1 [Orphan pages]
 - [[<page-1>]]
 ### C1 [Sub-wiki threshold]
-- `<domain>/`: 4 files — concrete suggestions: <topic-specific>
+- `<domain>/`: 7+ wiki-pages — split / wiki/ bucket / status-quo (see CANONICAL.md → Sub-Wiki Criteria for the three options)
 
 🔧 Apply Trivial + Standard together? If you'd like to walk through Review items too, just say so. To apply only specific rules, e.g. "only A4 and A8". Or just say "skip" to leave things as-is.
 ```

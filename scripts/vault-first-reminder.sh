@@ -30,7 +30,11 @@ fi
 cat >/dev/null
 
 # --- Build context message (concise summary of the canonical rule) ---
-read -r -d '' VAULT_FIRST_REMINDER <<'EOF' || true
+# Use unquoted heredoc so ${CLAUDE_PLUGIN_ROOT} expands to the real path at hook
+# execution time. Otherwise Claude sees the literal string `${CLAUDE_PLUGIN_ROOT}`
+# in additionalContext and cannot resolve it.
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-}"
+read -r -d '' VAULT_FIRST_REMINDER <<EOF || true
 [claude-wiki Vault-First Consultation rule]
 
 When the user asks a question that could plausibly be informed by their curated content, consult the vault FIRST before reaching for general knowledge or web retrieval — even when the user does not explicitly invoke /query-wiki.
@@ -56,7 +60,7 @@ How to apply:
 
 This is Claude-side default behavior, not a /query-wiki skill invocation. The /query-wiki skill is for structured queries with mandatory inline citations and auto-offer graduation; this rule is the informal default mode.
 
-Full rule and rationale: ${CLAUDE_PLUGIN_ROOT}/CANONICAL.md → "Vault-First Consultation" section.
+Full rule and rationale: ${PLUGIN_ROOT}/CANONICAL.md → "Vault-First Consultation" section.
 
 To bypass for this shell session: export CLAUDE_WIKI_VAULT_FIRST_DISABLE=1
 EOF

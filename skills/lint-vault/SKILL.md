@@ -92,7 +92,7 @@ Before running schema rules, **exclude files under any `raw/` subfolder** anywhe
 
 **Still scan raw/ for:**
 - B1-B4 hygiene rules (kepano CLI inherently considers all files; orphan/dead-link checks remain meaningful for raw/)
-- C1 4-file threshold (raw/ subfolder *count* matters when deciding sub-wiki promotion, but raw/ contents don't)
+- C1 7+ wiki-page threshold (raw/ contents are *not* counted toward the threshold — only `type: wiki-page` files at the domain root count)
 - C3 empty domain folder (a `raw/` containing only attachments isn't an "empty domain")
 
 **Path detection:** any file whose path contains a `/raw/` segment (case-sensitive — convention is lowercase).
@@ -257,21 +257,33 @@ Parse the TSV output for property usage counts. Flag properties that:
 
 ### C. Structural rules (3)
 
-#### C1 — Sub-wiki 4-file threshold
+#### C1 — Sub-wiki reorganization threshold (7+ wiki-page files)
 
-For each domain folder containing a `<domain>.md` wiki-index, count top-level `.md` files (exclude `raw/` subfolder).
+For each domain folder containing a `<domain>.md` wiki-index, count `type: wiki-page` / `wikiページ` files at domain root, **excluding** the `<domain>.md` index, `<domain>-log.md` log, and `raw/` subfolder content (per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Sub-Wiki Criteria).
 
 ```bash
 obsidian folder path="<domain>" info=files
 ```
 
-If count ≥ 4, **review** with sub-wiki promotion suggestion (concrete topic-based grouping suggestions per add-page Step 6.1 nudge style).
+Then YAML-parse each `.md` file's frontmatter at the domain root and count entries with `type: wiki-page` (or `タイプ: wikiページ`).
+
+If wiki-page count ≥ 7 (heuristic — clusters at 6 or tight at 8 are normal cases for judgment), **review** with the **three reorganization paths** from canonical:
+
+- **Option 1 — Sub-domain split** (default when natural clusters exist): identify sub-clusters with their own vocabulary; each candidate sub-domain must satisfy containment + scope + granularity (2+ pages, preferably 3+).
+- **Option 2 — `wiki/` orphan bucket** (when some pages don't cluster): typically when 4+ orphan pages accumulate alongside named sub-domains.
+- **Option 3 — Status-quo flat** (high wikilink density / unclear naming / plateau / personal preference): record reason in `<domain>-log.md` to silence future re-proposal.
+
+Surface concrete topic-based suggestions tailored to the actual page titles in this domain (not boilerplate).
+
+**Companion rule — wiki/ orphan bucket adoption (≥ 4 orphan pages)**: when a domain has named sub-domains AND ≥ 4 wiki-page files at root that don't belong to any named sub-domain, surface as a separate Review item suggesting `<domain>/wiki/` adoption (per CANONICAL.md Sub-Wiki Criteria → Option 2 → Adoption).
 
 #### C2 — File naming convention
 
-For each folder, the index file should be named `<dirname>/<dirname>.md` and the log should be `<dirname>-log.md`.
+For each domain folder, the index file should be named `<dirname>/<dirname>.md` and the log should be `<dirname>-log.md`.
 
 Detect mismatches (e.g. a wiki-index named `index.md` instead of `<dirname>.md`). **Review** — propose rename, but renames break wikilinks so user must approve.
+
+**Exclusion**: the `wiki/` orphan-bucket subfolder (Option 2 layout) has no own index by design — do not flag `<domain>/wiki/` as missing an index. Pages inside `<domain>/wiki/` are still subject to A1-A10 schema rules; only C2's "missing index" check is suppressed for `wiki/`.
 
 #### C3 — Empty domain folders
 

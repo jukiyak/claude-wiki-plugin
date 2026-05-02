@@ -100,7 +100,7 @@ The deduped union is the authoritative wiki-index list.
 
 ### 2.3 — Domain root (root-index) inventory
 
-Same 3-pass approach with the EN/JP value pair `root-index` / `ルート索引`. Folder names are vault-specific — do **not** rely on canonical's hard-coded `inbox/system/work/self/_pending` list. The plugin design intent is frontmatter-based detection (per setup-claude-wiki SKILL.md L296).
+Same 3-pass approach with the EN/JP value pair `root-index` / `ルート索引`. Folder names are vault-specific — do **not** rely on canonical's hard-coded `inbox/system/work/self/_pending` list. The plugin design intent is frontmatter-based detection (per `setup-claude-wiki` Step 6 — Categorize and name, downstream-skill independence note).
 
 ### 2.4 — Existing-page style inference (after target domain is fixed)
 
@@ -354,34 +354,55 @@ If `obsidian` commands started failing mid-write (e.g., `screen module... before
 
 ### 6.1 — Sub-wiki threshold nudge
 
-Count files in the target domain folder (excluding subfolders like `raw/`):
+Count `type: wiki-page` / `wikiページ` files in the target domain folder, **excluding** the `<domain>.md` index, `<domain>-log.md` log, and any `raw/` subfolder content (per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Sub-Wiki Criteria → Reorganization consideration):
 
 ```bash
 obsidian folder path="<domain>" info=files
 ```
 
-If the count is **4 or more** (typically `<domain>.md` + `<domain>-log.md` + 2+ wiki pages), surface a nudge with **concrete suggestions specific to the page topics in that domain**, not a generic message. The Claude that runs `/add-page` has just touched the new page and existing pages, so it knows what the domain is about — use that context.
+If the wiki-page count is **7 or more** (heuristic alert — clusters at 6 or tight at 8 are normal cases for judgment), surface a nudge that presents the **three reorganization paths** from canonical, with concrete suggestions specific to the actual page topics in this domain. The Claude that runs `/add-page` has just touched the new page and existing pages, so it knows what the domain is about — use that context.
 
-**LOCALE = ja example shape (don't paste verbatim — adapt to the actual domain content):**
+**Three paths to surface (per CANONICAL.md):**
 
-> 💡 `<domain>` フォルダ直下が 4 ファイル (`<files-listed>`) になりました。sub-wiki 化を検討するタイミングです。具体的には:
-> - <topic-based suggestion 1: e.g.「症状別ページが今後増えるなら `<domain>/症状/` のサブドメイン」>
-> - <topic-based suggestion 2: e.g.「ガイドライン系は `<domain>/参照/` に分離」>
-> - <topic-based suggestion 3: e.g.「個人観察ログを別構造に」>
-> 現状はまだ実害なし。`/lint-vault` (今後 ship 予定) で構造提案を受けられる予定です。
+1. **Option 1 — Sub-domain split** (default when natural clusters exist): name the candidate sub-domains, list which pages go where. Each candidate sub-domain must (a) be a semantic subset of parent, (b) have its own coherent vocabulary, (c) hold 2+ pages (preferably 3+).
+2. **Option 2 — `wiki/` orphan bucket** (when some pages don't cluster): for orphan pages that don't fit a sub-domain. Adoption is optional and triggered separately at **4+ orphan pages** at domain root alongside named sub-domains.
+3. **Option 3 — Status-quo flat** (when wikilink density is high or naming isn't clear): keep current layout; record reason in `<domain>-log.md` so future lint passes don't re-propose.
+
+**LOCALE = ja example shape (adapt to actual domain content; don't paste verbatim):**
+
+> 💡 `<domain>` の wiki-page が 7 件以上になりました (`<files-listed>`)。再編を検討するタイミングです。3 つの選択肢を提案します:
+>
+> **選択 1 — sub-domain 分割** (clusters が見える場合の default):
+> - 例えば `<domain>/<sub-A>/`、`<domain>/<sub-B>/` への分割。各 sub に 2-3 ページずつ。
+>
+> **選択 2 — `<domain>/wiki/` orphan bucket** (一部の page が sub-domain に収まらない場合):
+> - 名前の付かない page を `wiki/` に集約。Index/log は domain root に残す。Adoption は orphan が 4+ 件で検討。
+>
+> **選択 3 — 現状維持 (flat)**:
+> - cross-page wikilink density が高い、sub-domain 命名が決めづらい、page 数が plateau しそうなら flat 維持が自然。理由を `<domain>-log.md` に書き残しておく。
+>
+> どれが今のあなたの domain にしっくりきますか? 急ぐ必要はないので、`/lint-vault` で再診断もできます。
 
 **LOCALE = en example shape:**
 
-> 💡 `<domain>/` now has 4 top-level files (`<files-listed>`). Consider sub-wiki expansion. Specifically:
-> - <topic-based suggestion 1>
-> - <topic-based suggestion 2>
-> - <topic-based suggestion 3>
-> No urgent action needed. `/lint-vault` (coming soon) will offer structural suggestions.
+> 💡 `<domain>` now has 7+ wiki pages (`<files-listed>`). Time to consider reorganization. Three options:
+>
+> **Option 1 — Sub-domain split** (default when natural clusters exist):
+> - e.g., split into `<domain>/<sub-A>/` and `<domain>/<sub-B>/`, with 2-3 pages each.
+>
+> **Option 2 — `<domain>/wiki/` orphan bucket** (when some pages don't cluster):
+> - Move uncategorized pages to `wiki/`. Index/log stay at domain root. Adoption typically when 4+ orphan pages accumulate.
+>
+> **Option 3 — Status-quo flat**:
+> - Valid when cross-page wikilink density is high, sub-domain naming isn't yet clear, or page count is plateauing. Record the reason in `<domain>-log.md` so future lint passes don't re-propose.
+>
+> Which fits your domain best? No urgency — `/lint-vault` can re-evaluate later.
 
 **Discipline:**
-- Generate suggestions from what's actually in the domain, not boilerplate
+- Generate suggestions from what's actually in the domain (cite the page titles), not boilerplate
+- Use the **containment + scope + granularity check** from canonical Option 1 — don't propose splits that yield single-page sub-domains
 - Mention `raw/` only if the existing pages cite raw sources but no `raw/` folder exists yet
-- Do not act on the nudge — sub-wiki expansion is a deliberate user decision
+- Do not act on the nudge — reorganization is a deliberate user decision
 
 ### 6.2 — Confirmation message
 
@@ -411,9 +432,9 @@ Show an ASCII tree of the files written, with `computer://` links to each:
 
 Mention companion skills, flagged with their ship status:
 
-> **JP:** ページのレビューは Obsidian で。クエリは `/query-wiki` (今後 ship 予定)、品質チェックは `/lint-vault` (今後 ship 予定) で。
+> **JP:** ページのレビューは Obsidian で。クエリは `/query-wiki`、品質チェックは `/lint-vault` で行えます。
 >
-> **EN:** Review the page in Obsidian. For queries use `/query-wiki` (coming soon); for quality checks use `/lint-vault` (coming soon).
+> **EN:** Review the page in Obsidian. Use `/query-wiki` for queries with citations and `/lint-vault` for vault health checks.
 
 ---
 

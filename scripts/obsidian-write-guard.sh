@@ -25,8 +25,12 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 # --- Read hook input from stdin ---
+# Wrap jq parses with `|| true` so malformed JSON (a Cowork edge case) doesn't
+# trigger `set -e` and propagate a parse error to the user's console. The hook
+# silently fails open (exit 0) on bad input rather than blocking all tool calls.
 input=$(cat)
-tool_name=$(echo "$input" | jq -r '.tool_name // empty')
+tool_name=$(echo "$input" | jq -r '.tool_name // empty' 2>/dev/null || echo "")
+[[ -z "$tool_name" ]] && exit 0
 
 # --- Detect blocked operations ---
 block_reason=""
@@ -42,19 +46,19 @@ path_in_obsidian() {
 
 case "$tool_name" in
   Write|Edit)
-    target=$(echo "$input" | jq -r '.tool_input.file_path // empty')
+    target=$(echo "$input" | jq -r '.tool_input.file_path // empty' 2>/dev/null || echo "")
     if [[ -n "$target" ]] && path_in_obsidian "$target"; then
       block_reason="Direct write/edit to .obsidian/ blocked. Path: ${target}"
     fi
     ;;
   NotebookEdit)
-    target=$(echo "$input" | jq -r '.tool_input.notebook_path // empty')
+    target=$(echo "$input" | jq -r '.tool_input.notebook_path // empty' 2>/dev/null || echo "")
     if [[ -n "$target" ]] && path_in_obsidian "$target"; then
       block_reason="NotebookEdit on .obsidian/ blocked. Path: ${target}"
     fi
     ;;
   Bash)
-    cmd=$(echo "$input" | jq -r '.tool_input.command // empty')
+    cmd=$(echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null || echo "")
     # Block writes/destroys targeting .obsidian/.
     # Patterns: redirect (> path), tee path, rm path, mv path (as src or dst), cp -f path
     if [[ -n "$cmd" ]] && echo "$cmd" | grep -qE '(>[^|<>]*\.obsidian/|tee\s+[^|<>]*\.obsidian/|rm\s+(-[a-zA-Z]+\s+)*[^|<>]*\.obsidian/|mv\s+[^|<>]*\.obsidian/|cp\s+(-[a-zA-Z]+\s+)*[^|<>]*\.obsidian/)'; then
