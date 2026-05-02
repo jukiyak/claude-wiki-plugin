@@ -9,7 +9,7 @@
     {
       "name": "claude-wiki",
       "description": "Karpathy LLM Wiki pattern for Obsidian + Claude Cowork. JP default, EN fallback. Requires kepano/obsidian-skills (hard dependency). v0.1.0 ships 4 skills (setup-claude-wiki, add-page, lint-vault, query-wiki) + 2 hooks (.obsidian/ write-guard PreToolUse, vault-first-reminder SessionStart) + bundled CANONICAL.md schema.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "source": "./",
       "homepage": "https://github.com/jukiyak/claude-wiki-plugin",
       "keywords": ["obsidian", "wiki", "knowledge-base", "llm-wiki", "karpathy", "pkm", "claude-wiki", "second-brain"],
