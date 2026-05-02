@@ -2,7 +2,7 @@
 
 The full text of frontmatter scaffolds emitted by `add-page`. The main SKILL.md links here from Step 3 / Step 5; read this file when you need the exact frontmatter to write.
 
-These templates follow canonical (`~/.claude/rules/claude-wiki.md` L74-92) with the v0.1.0-dev.6 plugin-specific rebrand: `type` value for wiki pages is `wiki-page` / `wikiページ` (canonical uses bare `wiki`).
+These templates follow the canonical schema bundled with the plugin at `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` (`Wiki Page Frontmatter` section). Plugin v0.1.0-dev.6+ uses `wiki-page` / `wikiページ` for the wiki page type — earlier canonical drafts used a bare `wiki` value.
 
 The `関連:` / `contexts:` field appears with `[]` empty default — populate it from the body's `## 関連` / `## Related` wikilinks per the Frontmatter rules in SKILL.md (drop annotations, skip parent wiki-index).
 

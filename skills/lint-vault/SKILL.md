@@ -360,7 +360,7 @@ Apply in tier order; each tier completes before the next begins:
 1. **🟢 Trivial tier** (if user approved at Step 4): apply A4, A5, A7, A9-safe in one pass — text-level mechanical fixes
 2. **🟡 Standard tier** (per-rule, per-domain user approvals from Step 4): apply A1, A8 in approved scope
 3. **🔴 Review tier** (only if user opted in at Step 4): walk per-finding with conversational prompts (適用しますか / 次の rule に進みますか / この rule もう終わり、など自然語の answer を受ける); apply A2/A3/A6/A9-add/A10 as confirmed; B1-B4 and C1-C3 are advisory-only and produce no writes
-4. **Bump `updated` / `更新日`** on every file actually modified — content changed per canonical L96. Skip files where all approved fixes were no-ops or skipped.
+4. **Bump `updated` / `更新日`** on every file actually modified — content changed per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Wiki Page Frontmatter → `updated` Semantics. Skip files where all approved fixes were no-ops or skipped.
 5. **Log the lint pass** to vault-level `lint-log.md` (see 5.4)
 6. **Mode-specific cleanup**: in rule-level mode, leave `lint-report.md` in place (user may want to keep it as a snapshot); subsequent `/lint-vault` runs overwrite it. Optionally suggest archive (move to `lint-report-<date>.md`) if user requests history.
 
@@ -478,8 +478,8 @@ Same as add-page:
 
 ## Out of scope (deferred to v0.1.1+)
 
-- **D. Staleness rules** — `updated > verified_date` flag, fast-moving topic 6-month re-verification (canonical L151-153). Vault that's all `draft` (typical v0.1.0 dogfood) doesn't yet exercise these.
-- **`_lint_skip: true` honored** — file-level opt-out from lint (canonical L155). Add when staleness ships.
+- **D. Staleness rules** — `updated > verified_date` flag, fast-moving topic 6-month re-verification (per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Wiki Page Frontmatter → Verification → Staleness check). Vault that's all `draft` (typical v0.1.0 dogfood) doesn't yet exercise these.
+- **`_lint_skip: true` honored** — file-level opt-out from lint (per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Wiki Page Frontmatter → Frontmatter Opt-Out). Add when staleness ships.
 - **Auto-fix for B (kepano hygiene)** — orphans/dead-links/dead-ends require user judgment, can't auto-fix safely.
 - **Custom rule plugins** — third-party rule extensions, fixed rule set in v0.1.0.
 - **Verified-page promotion gate** — A9 currently auto-removes orphan `verified_date` but doesn't auto-promote `draft` → `verified`.

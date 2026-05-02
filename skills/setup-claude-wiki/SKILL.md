@@ -404,7 +404,7 @@ This is your knowledge base, set up by the claude-wiki plugin.
 |:--|:--|:--|
 | Raw sources | You | Articles, PDFs, transcripts under `raw/` folders. Immutable. |
 | Wiki | Claude | Summaries, indexes, cross-references, logs. Generated and maintained by skills. |
-| Schema | Both | Conventions live in the plugin and `~/.claude/rules/`. |
+| Schema | Both | Canonical schema bundled with the plugin (`CANONICAL.md`); user customizes via tags, summaries, and content choices. |
 
 ## Your vault structure
 

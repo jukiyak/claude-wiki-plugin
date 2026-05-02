@@ -18,8 +18,12 @@ Skills:
 3. `lint-vault` — schema / hygiene / structural lint with tier-based Batch Approval (17 rules, file-level + rule-level modes)
 4. `query-wiki` — hybrid index-first reading + grep fallback, markdown / table / Mermaid synthesis with `[[Page]]` citations, auto-offer graduation back to wiki
 
-Hook:
-- `obsidian-write-guard` — PreToolUse guard that blocks Write/Edit/NotebookEdit and destructive Bash operations targeting the vault's `.obsidian/` directory (workspace.json, plugins/, themes/, etc.). Auto-registered on plugin install. Override via `CLAUDE_WIKI_GUARD_DISABLE=1` env var for rare manual edits.
+Hooks:
+- `obsidian-write-guard` — **PreToolUse** guard that blocks Write/Edit/NotebookEdit and destructive Bash operations targeting the vault's `.obsidian/` directory (workspace.json, plugins/, themes/, etc.). Auto-registered on plugin install. Override via `CLAUDE_WIKI_GUARD_DISABLE=1` env var for rare manual edits.
+- `vault-first-reminder` — **SessionStart** hook that injects the Vault-First Consultation rule into Claude's context at session start. Ensures Claude consults the vault first before reaching for general knowledge or web on substantive questions. Override via `CLAUDE_WIKI_VAULT_FIRST_DISABLE=1`. Full rule lives in `CANONICAL.md` (Vault-First Consultation section).
+
+Bundled schema:
+- `CANONICAL.md` at the plugin root — single source of truth referenced by every skill via `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md`. Distributed with the plugin so all users get the same schema, no separate setup required.
 
 統合 dogfood + `/ultrareview` follow before v0.1.0 stable release. `daily-log` and its Stop reminder hook were originally scoped for v0.1.0 but moved to v0.1.1+ as an optional add-on (journaling is opinionated; many users don't want it imposed).
 
@@ -105,7 +109,7 @@ The plugin sits between three layers, following Karpathy's LLM Wiki pattern:
 |:---|:---|:---|
 | **Raw sources** | You | Articles, PDFs, transcripts in `raw/` folders. Immutable. |
 | **Wiki** | Claude | Summaries, entity pages, cross-references — generated and maintained by skills. |
-| **Schema** | Both | Conventions defined in `~/.claude/rules/claude-wiki.md` (canonical) and the plugin's skill definitions. |
+| **Schema** | Both | Canonical schema bundled with the plugin (`CANONICAL.md`) and referenced by every skill. |
 
 See [Karpathy's gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) for the conceptual foundation.
 
@@ -118,10 +122,12 @@ claude-wiki/
 ├── .claude-plugin/
 │   ├── marketplace.json    # Marketplace catalog (used by GitHub install)
 │   └── plugin.json          # Plugin manifest
+├── CANONICAL.md             # Canonical schema (single source of truth, referenced by all skills)
 ├── hooks/
-│   └── hooks.json           # PreToolUse hook declaration (auto-registered)
+│   └── hooks.json           # PreToolUse + SessionStart hook declarations (auto-registered)
 ├── scripts/
-│   └── obsidian-write-guard.sh  # Hook implementation (bash + jq)
+│   ├── obsidian-write-guard.sh    # PreToolUse hook (block writes to .obsidian/)
+│   └── vault-first-reminder.sh    # SessionStart hook (inject vault-first behavior rule)
 ├── skills/
 │   ├── setup-claude-wiki/
 │   │   └── SKILL.md         # Interview-driven vault scaffold (shipped)

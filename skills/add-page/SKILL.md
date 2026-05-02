@@ -143,7 +143,7 @@ https://blog.foo.com/2026/04/headache-tips/  → headache-tips
 
 #### 3.A.2 — Extract & fact-check
 
-Read the raw source. Extract key claims, identify any internal contradictions, and pull out 2-3 most load-bearing facts. (Compile-tier discipline per canonical L244: "only verified information enters the wiki; flag uncertainties inline".)
+Read the raw source. Extract key claims, identify any internal contradictions, and pull out 2-3 most load-bearing facts. (Compile-tier discipline per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Ingest Workflow → Compile-tier workflow: "only verified information enters the wiki; flag uncertainties inline".)
 
 #### 3.A.3 — Page draft
 
@@ -439,7 +439,7 @@ All wiki-page templates include `関連: []` / `contexts: []` placeholder; popul
 - **Date strings always quoted:** `更新日: '2026-04-30'` / `updated: '2026-04-30'`. YAML 1.1 parsers coerce unquoted dates to timestamps.
 - **JP keys are quoted:** `"タイプ": wikiページ`. EN keys are unquoted: `type: wiki-page`.
 - **Wiki-link arrays:** `カテゴリ: ["[[親ドメイン]]"]` / `categories: ["[[parent-domain]]"]`.
-- **Mirror `## 関連` body wikilinks to `関連` / `contexts` frontmatter:** When the page body has a `## 関連` (JP) or `## Related` (EN) section listing peer-page wikilinks (e.g. `- [[耳鳴り]]` or `- [[耳鳴り]] (誘因として直接関与)`), include **all** those wikilinks in the frontmatter `関連:` / `contexts:` array, in **bare form** — drop trailing annotations. The annotations stay in the body section (they explain WHY pages are related and are valuable to human readers); the frontmatter array is the machine-readable signal that activates Claude's auto-read trigger (canonical L85) and the v0.1.1+ auto-read hook. Skip only: (a) the parent wiki-index (already in `categories`), and (b) wikilinks that appear inline in body text outside the `## 関連` / `## Related` section (those are casual mentions, not declared peer relationships).
+- **Mirror `## 関連` body wikilinks to `関連` / `contexts` frontmatter:** When the page body has a `## 関連` (JP) or `## Related` (EN) section listing peer-page wikilinks (e.g. `- [[耳鳴り]]` or `- [[耳鳴り]] (誘因として直接関与)`), include **all** those wikilinks in the frontmatter `関連:` / `contexts:` array, in **bare form** — drop trailing annotations. The annotations stay in the body section (they explain WHY pages are related and are valuable to human readers); the frontmatter array is the machine-readable signal that activates Claude's auto-read trigger (per `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Auto-Read Convention → Key Properties: `contexts`) and the v0.1.1+ auto-read hook. Skip only: (a) the parent wiki-index (already in `categories`), and (b) wikilinks that appear inline in body text outside the `## 関連` / `## Related` section (those are casual mentions, not declared peer relationships).
 - **No `cssclasses`** — retired from canonical (dead metadata). Do not emit even when kepano's obsidian-markdown skill suggests it.
 - **No trailing whitespace inside frontmatter.**
 
@@ -470,7 +470,7 @@ All wiki-page templates include `関連: []` / `contexts: []` placeholder; popul
 | Status: verified | `確認済み` | `verified` |
 | Status: archived | `アーカイブ済み` | `archived` |
 
-> **Note:** The wiki-page values (`wikiページ` / `wiki-page`) diverge intentionally from canonical's bare `wiki` (per `~/.claude/rules/claude-wiki.md`) for semantic clarity. Other type values match canonical.
+> **Note:** The plugin's bundled canonical (`${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Hierarchy Roles section) declares `wiki-page` (EN) / `wikiページ` (JP) as the wiki-page type. Earlier pre-plugin canonical drafts used a bare `wiki` value — the plugin's `wiki-page` is more semantically explicit. Other type values (`root-index`, `wiki-index`, `wiki-log`) are unchanged.
 
 ---
 
