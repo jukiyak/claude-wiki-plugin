@@ -9,7 +9,7 @@ This is the canonical schema for vaults managed by the `claude-wiki` Cowork plug
 - [Hierarchy Roles](#hierarchy-roles) — `type` enum: root-index / wiki-index / wiki-page / wiki-log
 - [Auto-Read Convention](#auto-read-convention) — parent + contexts auto-load on file read; budget 4-7 files
 - [Lifecycle](#lifecycle) — start → research → compile → iterate → reorganize
-- [Wiki Page Frontmatter](#wiki-page-frontmatter) — required/conditional/optional fields, date quoting, `updated` semantics, verification
+- [Wiki Page Frontmatter](#wiki-page-frontmatter) — required/conditional/optional fields, date quoting, **locale mapping (JP↔EN)**, locale auto-detect procedure, `updated` semantics, verification
 - [Sub-Wiki Criteria](#sub-wiki-criteria) — initial scaffolding, 7+ wiki-page reorganization trigger, three reorganization paths
 - [Directory Depth Rule](#directory-depth-rule) — sub-domain test, recursive splits valid, no hard depth cap
 - [Wiki-Link Convention](#wiki-link-convention) — link contextually, not mechanically
@@ -157,6 +157,53 @@ aliases: []
 **Conditional property:** `verified_date: 'YYYY-MM-DD'` — added only when `status: verified`, omitted otherwise. Keeps the Properties panel lean on mobile/iPad.
 
 **Date format:** Always quote date-only strings (`'2026-04-15'`) to prevent YAML 1.1 coercion to ISO 8601 timestamps. Affects `updated`, `date`, `archived_date`, `verified_date`.
+
+### Locale Mapping (JP ↔ EN)
+
+Each vault locks one locale at setup time (`setup-claude-wiki` Step 3). Every key and every type/status value has a paired translation. This table is the **single source of truth**: skills (`setup-claude-wiki`, `add-page`, `lint-vault`, `query-wiki`) reference it instead of duplicating mappings.
+
+| Concept | LOCALE = ja key | LOCALE = en key |
+|:--|:--|:--|
+| Role discriminator | `タイプ` | `type` |
+| Free-form labels | `タグ` | `tags` |
+| Parent wiki-link | `カテゴリ` | `categories` |
+| Status | `ステータス` | `status` |
+| Last content edit date | `更新日` | `updated` |
+| One-line summary | `まとめ` | `summary` |
+| Provenance wiki-links | `出典` | `sources` |
+| Alternate names | `エイリアス` | `aliases` |
+| Auto-read related pages | `関連` | `contexts` |
+| Verification date | `確認日` | `verified_date` |
+| Archive date | `アーカイブ日` | `archived_date` |
+
+| Concept | LOCALE = ja value | LOCALE = en value |
+|:--|:--|:--|
+| Type: root index | `ルート索引` | `root-index` |
+| Type: wiki index | `索引` | `wiki-index` |
+| Type: wiki log | `ログ` | `wiki-log` |
+| Type: wiki page | `wikiページ` | `wiki-page` |
+| Status: draft | `下書き` | `draft` |
+| Status: in review | `レビュー中` | `review` |
+| Status: verified | `確認済み` | `verified` |
+| Status: archived | `アーカイブ済み` | `archived` |
+
+**Quoting rule:** JP keys must be quoted in YAML (`"タイプ": wikiページ`) for parser compatibility. EN keys are unquoted (`type: wiki-page`).
+
+**Type-value note:** This canonical declares `wiki-page` / `wikiページ` as the wiki-page type discriminator. Pre-plugin canonical drafts used a bare `wiki` value — `wiki-page` is the more semantically explicit form going forward. `lint-vault` rule A2 reports both old `wiki` and any unknown type values as drift.
+
+#### Locale auto-detect (vault-wide majority vote)
+
+This is the canonical procedure every skill uses to determine an existing vault's locale. `setup-claude-wiki` does **not** use it (the user's Step-3 prompt locks the locale for a fresh vault); `add-page`, `query-wiki`, and `lint-vault` re-use this procedure during Step 2 vault survey.
+
+```bash
+obsidian properties counts format=tsv
+```
+
+Tally JP frontmatter keys (`タイプ`, `タグ`, `カテゴリ`, `ステータス`, `更新日`, `まとめ`, `出典`, `エイリアス`, `関連`, `確認日`, `アーカイブ日`) vs EN keys (`type`, `tags`, `categories`, `status`, `updated`, `summary`, `sources`, `aliases`, `contexts`, `verified_date`, `archived_date`). The locale with more occurrences wins. Tally is more robust than reading a single README — it reflects the vault's actual content, not a metadata file that may have drifted.
+
+Fallback for tied or empty counts (a brand-new vault where setup just ran): read vault root `README.md` and inspect its frontmatter keys. The README is written in the locked locale by `setup-claude-wiki` Step 7 / Template 7.A.
+
+The detected `LOCALE ∈ { ja, en }` is then used by the calling skill for: which key/value side of the [Locale Mapping table](#locale-mapping-jp--en) to write, which body-section heading to look for (`## 関連` vs `## Related`), and which template variant to render (Batch Approval Plan, lint report, query response).
 
 ### `updated` Semantics
 

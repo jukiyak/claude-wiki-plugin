@@ -340,30 +340,7 @@ The Inbox and System folders are created with only their own root-index file. Th
 
 ### Frontmatter mapping (LOCALE = ja vs en)
 
-| Concept | LOCALE = ja key | LOCALE = en key |
-|:--|:--|:--|
-| Role discriminator | `タイプ` | `type` |
-| Free-form labels | `タグ` | `tags` |
-| Parent wiki-link | `カテゴリ` | `categories` |
-| Status | `ステータス` | `status` |
-| Last content edit date | `更新日` | `updated` |
-| One-line summary | `まとめ` | `summary` |
-| Provenance wiki-links | `出典` | `sources` |
-| Alternate names | `エイリアス` | `aliases` |
-| Auto-read related pages | `関連` | `contexts` |
-| Verification date | `確認日` | `verified_date` |
-| Archive date | `アーカイブ日` | `archived_date` |
-
-| Concept | LOCALE = ja value | LOCALE = en value |
-|:--|:--|:--|
-| Type: root index | `ルート索引` | `root-index` |
-| Type: wiki index | `索引` | `wiki-index` |
-| Type: wiki log | `ログ` | `wiki-log` |
-| Type: wiki page | `wikiページ` | `wiki-page` |
-| Status: draft | `下書き` | `draft` |
-| Status: in review | `レビュー中` | `review` |
-| Status: verified | `確認済み` | `verified` |
-| Status: archived | `アーカイブ済み` | `archived` |
+The full key/value mapping table is the canonical's single source of truth — see `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` → **Wiki Page Frontmatter → Locale Mapping (JP ↔ EN)**. It covers every key (`タイプ` ↔ `type`, `タグ` ↔ `tags`, …), every type value (`ルート索引` ↔ `root-index`, `wikiページ` ↔ `wiki-page`, …), and every status value. The setup skill writes only the locale-appropriate side of each pair when scaffolding root-indexes, README, and `domain.md` / `domain-log.md` files.
 
 ---
 

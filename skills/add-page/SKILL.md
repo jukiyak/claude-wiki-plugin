@@ -80,13 +80,7 @@ Read-only exploration of the vault's current state.
 
 ### 2.1 — Locale auto-detect (vault-wide majority vote)
 
-```bash
-obsidian properties counts format=tsv
-```
-
-Tally JP frontmatter keys (`タイプ`, `タグ`, `カテゴリ`, `ステータス`, `更新日`, `まとめ`, `出典`, `エイリアス`, `関連`, `確認日`, `アーカイブ日`) vs EN keys (`type`, `tags`, `categories`, `status`, `updated`, `summary`, `sources`, `aliases`, `contexts`, `verified_date`, `archived_date`). The locale with more occurrences wins. This is more robust than reading a single README.
-
-If the count is tied or empty (very small vault), fall back to reading vault root `README.md` and inspecting its frontmatter keys.
+Run the canonical procedure: `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` → **Wiki Page Frontmatter → Locale Mapping → Locale auto-detect**. The detected `LOCALE ∈ { ja, en }` controls every locale-sensitive decision below: which key/value side of the mapping table to write, which body-section heading to look for (`## 関連` vs `## Related`), and which Batch Approval Plan template (4.A vs 4.B) to render.
 
 ### 2.2 — Wiki-index inventory (3-pass strategy, avoid colon parse error)
 
@@ -360,7 +354,9 @@ Count `type: wiki-page` / `wikiページ` files in the target domain folder, **e
 obsidian folder path="<domain>" info=files
 ```
 
-If the wiki-page count is **7 or more** (heuristic alert — clusters at 6 or tight at 8 are normal cases for judgment), surface a nudge that presents the **three reorganization paths** from canonical, with concrete suggestions specific to the actual page topics in this domain. The Claude that runs `/add-page` has just touched the new page and existing pages, so it knows what the domain is about — use that context.
+**Fire only on threshold crossing.** Surface the nudge when the post-write wiki-page count is **exactly 7** — i.e., this page is the one that crossed the heuristic boundary. If post-write count is already 8+, the threshold was crossed in a previous session; staying silent here avoids re-prompting on every subsequent add. The user will see the canonical's reorganization options again via `/lint-vault` (C1), which sweeps the whole vault on demand.
+
+Heuristic note: clusters at 6 or tight at 8 are normal cases for judgment — `/lint-vault` is the place to act on those, not `/add-page`. When the nudge fires, present the **three reorganization paths** from canonical, with concrete suggestions specific to the actual page topics in this domain. The Claude that runs `/add-page` has just touched the new page and existing pages, so it knows what the domain is about — use that context.
 
 **Three paths to surface (per CANONICAL.md):**
 
@@ -466,32 +462,7 @@ All wiki-page templates include `関連: []` / `contexts: []` placeholder; popul
 
 ### Frontmatter mapping (LOCALE = ja vs en)
 
-| Concept | LOCALE = ja key | LOCALE = en key |
-|:--|:--|:--|
-| Role discriminator | `タイプ` | `type` |
-| Free-form labels | `タグ` | `tags` |
-| Parent wiki-link | `カテゴリ` | `categories` |
-| Status | `ステータス` | `status` |
-| Last content edit date | `更新日` | `updated` |
-| One-line summary | `まとめ` | `summary` |
-| Provenance wiki-links | `出典` | `sources` |
-| Alternate names | `エイリアス` | `aliases` |
-| Auto-read related pages | `関連` | `contexts` |
-| Verification date | `確認日` | `verified_date` |
-| Archive date | `アーカイブ日` | `archived_date` |
-
-| Concept | LOCALE = ja value | LOCALE = en value |
-|:--|:--|:--|
-| Type: root index | `ルート索引` | `root-index` |
-| Type: wiki index | `索引` | `wiki-index` |
-| Type: wiki log | `ログ` | `wiki-log` |
-| **Type: wiki page** | **`wikiページ`** | **`wiki-page`** |
-| Status: draft | `下書き` | `draft` |
-| Status: in review | `レビュー中` | `review` |
-| Status: verified | `確認済み` | `verified` |
-| Status: archived | `アーカイブ済み` | `archived` |
-
-> **Note:** The plugin's bundled canonical (`${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` Hierarchy Roles section) declares `wiki-page` (EN) / `wikiページ` (JP) as the wiki-page type. Earlier pre-plugin canonical drafts used a bare `wiki` value — the plugin's `wiki-page` is more semantically explicit. Other type values (`root-index`, `wiki-index`, `wiki-log`) are unchanged.
+The full key/value mapping table is the canonical's single source of truth — see `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` → **Wiki Page Frontmatter → Locale Mapping (JP ↔ EN)**. It covers every key (`タイプ` ↔ `type`, `タグ` ↔ `tags`, `関連` ↔ `contexts`, …) and every type/status value (`wikiページ` ↔ `wiki-page`, `下書き` ↔ `draft`, …). When constructing a page draft (Step 4), populate frontmatter from the locale side detected in Step 2.1; the locked vault locale never mixes within a single file.
 
 ---
 

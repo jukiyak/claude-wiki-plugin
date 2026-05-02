@@ -76,9 +76,9 @@ If a previous query already produced a graduated page covering the same topic (s
 
 ## Step 2 — Hybrid vault walk
 
-### 2.1 — Locale & vault state (re-use add-page Step 2.1)
+### 2.1 — Locale & vault state
 
-`obsidian properties counts format=tsv` → JP keys vs EN keys majority vote → locale lock for citations and graduation page output.
+Run the canonical locale-detect procedure: `${CLAUDE_PLUGIN_ROOT}/CANONICAL.md` → **Wiki Page Frontmatter → Locale Mapping → Locale auto-detect**. The detected `LOCALE ∈ { ja, en }` is locked for citations, response phrasing, and any graduation-to-wiki page written below in Step 5.
 
 ### 2.2 — Index-first walk
 

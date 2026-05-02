@@ -59,9 +59,14 @@ case "$tool_name" in
     ;;
   Bash)
     cmd=$(echo "$input" | jq -r '.tool_input.command // empty' 2>/dev/null || echo "")
-    # Block writes/destroys targeting .obsidian/.
-    # Patterns: redirect (> path), tee path, rm path, mv path (as src or dst), cp -f path
-    if [[ -n "$cmd" ]] && echo "$cmd" | grep -qE '(>[^|<>]*\.obsidian/|tee\s+[^|<>]*\.obsidian/|rm\s+(-[a-zA-Z]+\s+)*[^|<>]*\.obsidian/|mv\s+[^|<>]*\.obsidian/|cp\s+(-[a-zA-Z]+\s+)*[^|<>]*\.obsidian/)'; then
+    # Two-stage check: (1) command mentions .obsidian path, (2) uses a write/destroy verb.
+    # Mention covers .obsidian/ and bare .obsidian as a final token (end-of-line, space, quote).
+    # Verb list covers shell redirects, tee, plus common write/destroy commands. This is a
+    # defense-in-depth filter — interpreter calls (python -c, node -e, ruby) bypass by design;
+    # the realistic claude-wiki failure modes are caught via Write/Edit tools.
+    if [[ -n "$cmd" ]] \
+       && echo "$cmd" | grep -qE '(\.obsidian(/|[[:space:]'\''"]|$))' \
+       && echo "$cmd" | grep -qE '(\b(rm|rmdir|mv|cp|tee|sed|find|chmod|chown|truncate|dd)\b|>[^|<>])'; then
       # Truncate command in message to keep payload small
       truncated=$(printf '%s' "$cmd" | head -c 200)
       block_reason="Bash command writes/destroys .obsidian/. Command (first 200 chars): ${truncated}"
