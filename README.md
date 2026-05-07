@@ -17,6 +17,8 @@ Hooks (auto-registered on plugin install):
 
 - `obsidian-write-guard` — **PreToolUse** guard that blocks Write/Edit/NotebookEdit and destructive Bash operations targeting the vault's `.obsidian/` directory (workspace.json, plugins/, themes/, etc.). Override via `CLAUDE_WIKI_GUARD_DISABLE=1` for rare manual edits.
 - `vault-first-reminder` — **SessionStart** hook that injects the Vault-First Consultation rule into Claude's context at session start. Ensures Claude consults the vault first before reaching for general knowledge or web on substantive questions. Override via `CLAUDE_WIKI_VAULT_FIRST_DISABLE=1`.
+- `auto-bump-updated` (v0.1.4+) — **PostToolUse** hook that auto-updates a wiki-page's `更新日:` / `updated:` frontmatter to today's quoted YYYY-MM-DD whenever Claude Edit/Writes the file. Skips schema-only edits via heuristic; skips when the date is already today. Override via `CLAUDE_WIKI_AUTO_BUMP_DISABLE=1`.
+- `auto-read-related` (v0.1.4+) — **PostToolUse** hook that auto-loads a wiki-page's parent index (`categories[0]`) and `contexts[]` entries into Claude's next turn via `additionalContext`, implementing CANONICAL.md's Auto-Read Convention without relying on Claude's discretion. Budget: max 7 files per Read, ~3000-char total cap, skips `status: archived`. Override via `CLAUDE_WIKI_AUTO_READ_DISABLE=1`.
 
 Bundled schema:
 

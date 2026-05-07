@@ -6,7 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/obsidian-write-guard.sh"
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/obsidian-write-guard.sh",
+            "timeout": 10
           }
         ]
       }
@@ -16,7 +17,30 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/vault-first-reminder.sh"
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/vault-first-reminder.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/auto-bump-updated.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/scripts/auto-read-related.sh",
+            "timeout": 10
           }
         ]
       }

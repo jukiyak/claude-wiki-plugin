@@ -106,6 +106,8 @@ When Claude reads any wiki file (via `obsidian read`), auto-read related context
 4. **Max reads**: 1 (self) + 1 (parent) + parent's contexts (~1-3) + own contexts (~1-3) = **~4-7 files**
 5. **Skip** files with `status: archived`.
 
+> **v0.1.4+:** the `auto-read-related` PostToolUse hook (`scripts/auto-read-related.sh`) executes this convention automatically whenever Claude reads a wiki-page in the vault — frontmatter + body excerpt of each related file is injected into the next turn's context. The hook respects the budget and `status: archived` skip. Override via `CLAUDE_WIKI_AUTO_READ_DISABLE=1`.
+
 ### Parent Detection (two-tier)
 
 **Tier 1 — `categories` property (preferred).** Wiki pages have `categories: ["[[health]]"]`. Use the first `categories` entry as the parent index. Explicit, no algorithm needed.
