@@ -1,0 +1,15 @@
+# Plugin manifests are formatted by scripts/bump-version.sh (sed-based,
+# inline arrays preserved). Prettier's JSON formatter expands inline
+# arrays to multi-line and removes trailing newlines, which:
+#   1. Churns the diff on every version bump
+#   2. Has caused Cowork/Claude Code plugin manifest parser failures
+#      (v0.1.4 install was broken until format was restored)
+# Keep these files out of Prettier's reach.
+.claude-plugin/plugin.json
+.claude-plugin/marketplace.json
+hooks/hooks.json
+
+# Skill descriptions need to be inspectable as raw text (1024-char
+# Anthropic skill description limit means precise length awareness
+# matters — see v0.1.3 release notes).
+skills/**/SKILL.md

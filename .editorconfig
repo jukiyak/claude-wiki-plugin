@@ -1,0 +1,24 @@
+root = true
+
+# Project-wide default: trailing newline, LF line endings, UTF-8.
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+# Plugin manifest JSONs must keep inline arrays (e.g., keywords) — see
+# scripts/bump-version.sh for the rationale (sed-based bump preserves
+# format; jq pretty-printer would expand to multi-line and churn diffs
+# on every release). Some editors' format-on-save also strips the
+# trailing newline, which Cowork's plugin manifest parser rejects.
+# Treat these files as "formatter-managed by bump-version.sh, do not
+# auto-reformat".
+[/.claude-plugin/*.json]
+indent_style = space
+indent_size = 2
+
+# hooks.json — same rationale: stay in the format we hand-author.
+[/hooks/hooks.json]
+indent_style = space
+indent_size = 2
